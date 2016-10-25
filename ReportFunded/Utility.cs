@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EllieMae.Encompass.Client;
+using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 
@@ -28,5 +29,14 @@ public static class Utility
         
 
         Console.Out.WriteLine("Email sent!");
+    }
+    public static Session ConnectToServer()
+    {
+        Console.Out.WriteLine("connecting to server...");
+        Session s = new Session();
+        s.Start(System.Configuration.ConfigurationManager.AppSettings["Eserver_address"].ToString(), System.Configuration.ConfigurationManager.AppSettings["Eserver_login"].ToString(),
+        System.Configuration.ConfigurationManager.AppSettings["Eserver_pw"].ToString());
+        Console.Out.WriteLine("connected.");
+        return s;
     }
 }
