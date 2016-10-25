@@ -5,18 +5,18 @@ using EllieMae.Encompass.Query;
 using System;
 using System.Text;
 
-public class FundedReport
+public class NotPurchasedReport
 {
 
     private Session session;
 
-    public FundedReport(Session session)
+    public NotPurchasedReport(Session session)
     {
         this.session = session;
     }
 
     public String run()
-	{
+    {
 
         DateTime timestamp = DateTime.Now;
 

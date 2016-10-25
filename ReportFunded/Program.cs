@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EllieMae.Encompass.Client;
+using System;
 using System.Collections.Generic;
 
 namespace ReportFunded
@@ -9,10 +10,14 @@ namespace ReportFunded
 
         static void Main(string[] args)
         {
-            Console.Out.WriteLine("Program started...");
+            Console.Out.WriteLine("Funded Report started...");
+
+            new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
+            //connect
+            Session session = Utility.ConnectToServer();
 
             //run funding report
-            FundedReport report1 = new FundedReport();
+            FundedReport report1 = new FundedReport(session);
             String text1 = report1.run();
 
             //send email
@@ -22,7 +27,11 @@ namespace ReportFunded
             cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
             Utility.SendEmail(to, cc,"Funded Files for " + DateTime.Now.ToShortDateString(), text1);
 
-            Console.Out.WriteLine("Program finished...");
+            Console.Out.WriteLine("Funded Report finished...");
+
+
+            session.End();
+
         }
 
 
