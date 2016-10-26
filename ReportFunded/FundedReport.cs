@@ -2,13 +2,22 @@
 using EllieMae.Encompass.Client;
 using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
+using EllieMae.Encompass.Reporting;
+using ReportFunded;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 public class FundedReport
 {
 
     private Session session;
+
+    private List<Row> report;
+    public FundedReport()
+    {
+        this.report = new List<Row>();
+    }
 
     public String run()
 	{
@@ -43,53 +52,121 @@ public class FundedReport
         cri.Precision = DateFieldMatchPrecision.Day;
 
         QueryCriterion fullQuery = cri;
-        LoanIdentityList ids = session.Loans.Query(fullQuery);
 
-        int count = ids.Count;
+        StringList fields = new StringList();
+        fields.Add("Fields.VEND.X263");
+        fields.Add("Fields.352");
+        fields.Add("Fields.364");
+        fields.Add("Fields.37");
+        fields.Add("Fields.4000");
+        fields.Add("Fields.1109");
+        fields.Add("Fields.362");
+        fields.Add("Fields.317");
+
+        LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
+
+
+
+        //LoanIdentityList ids = session.Loans.Query(fullQuery);
+
+        int count = results.Count;
         Console.Out.WriteLine("Total Files Funded " + cri.Value.ToShortDateString() + ": " + count);
 
         text += "Total Files Funded: <b>" + count + "</b><br/><br/>";
 
-        text += "<table border='1'>";
+        //headers
+        Row row = new Row();
+        row.add("Investor");
+        row.add("Inv #");
+        row.add("Loan #");
+        row.add("Last Name");
+        row.add("First Name");
+        row.add("Loan Amount");
+        row.add("Processor");
+        row.add("Loan Officer");
+        report.Add(row);
 
-        text += "<tr><th>Investor</th>";
-        text += "<th>Inv #</th>";
-        text += "<th>Loan #</th>";
-        text += "<th>Borrower Name</th>";
-        // text += "<th>First Name</th>";
-        text += "<th>Loan Amount</th>";
-        text += "<th>Processor</th>";
-        text += "<th>Loan Officer</th>";
-        text += "</tr>";
 
-        foreach (LoanIdentity id in ids)
+        foreach (LoanReportData data in results)
         {
-            //Console.Out.WriteLine(id.Guid);
+            Row line = new Row();
+            foreach (String field in fields)
+            {
+                if (data[field].GetType() == typeof(System.String))
+                {
+                    line.add(data[field].ToString());
+                }
+                else
+                {
+                    int value = Convert.ToInt32(data[field]);
+                    // Console.Out.WriteLine(value.ToString("C"));
+                    line.add(value.ToString("C"));
+                }
 
-            text += "<tr><td>";
-            Loan loan = session.Loans.Open(id.Guid);
-
-            StringBuilder line = new StringBuilder();
-            //  line.Append(loan.Fields["Log.MS.Date.Funding"] + "</td><td>");
-            line.Append(loan.Fields["VEND.X263"] + "</td><td>");
-            line.Append(loan.Fields["352"] + "</td><td>");
-            line.Append(loan.Fields["364"] + "</td><td>");
-            line.Append(loan.Fields["37"] + ", " + loan.Fields["4000"] + "</td><td>");
-            // line.Append(loan.Fields["4000"] + "</td><td>");
-            line.Append(loan.Fields["1109"] + "</td><td>");
-            line.Append(loan.Fields["362"] + "</td><td>");
-            line.Append(loan.Fields["317"] + "</td>");
-
-            text += line.ToString() + "</tr>";
-            Console.Out.Write(".");
-            //Console.Out.WriteLine(line.ToString());
-            loan.Close();
-
+            }
+            report.Add(line);
+            Console.Out.Write("."); //status bar
         }
+        Console.Out.WriteLine("");
+        results.Close();
 
-        text += "</table>";
+
+        text += formatReport(report);
 
         return text;
 
+
+        
+
+    }
+    public class Row
+    {
+        List<String> cols;
+        public Row()
+        {
+            this.cols = new List<String>();
+        }
+        public void add(String element)
+        {
+            this.cols.Add(element);
+        }
+        public List<String> getRow()
+        {
+            return cols;
+        }
+        public String toString()
+        {
+            return this.cols.ToString();
+        }
+
+        internal void add(object p)
+        {
+            throw new NotImplementedException();
+        }
+    };
+
+    private String formatReport(List<Row> report)
+    {
+        String text = "<table border='1'>";
+        foreach (Row row in report)
+        {
+            row.toString();
+            text += "<tr>";
+            foreach (String col in row.getRow())
+            {
+                text += "<td>" + col + "</td>";
+                if (Program.debug)
+                {
+                    Console.Out.Write(col+"\t");
+                }
+            }
+            if (Program.debug)
+            {
+                Console.Out.WriteLine("");
+            }
+            text += "</tr>";
+        }
+        text += "</table>";
+        return text;
     }
 }

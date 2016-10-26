@@ -7,7 +7,7 @@ namespace ReportFunded
     class Program
     {
 
-        public static Boolean debug = false;
+        public static Boolean debug = true;
 
         static void Main(string[] args)
         {

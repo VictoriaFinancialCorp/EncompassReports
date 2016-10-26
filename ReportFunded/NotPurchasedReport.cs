@@ -73,6 +73,7 @@ public class NotPurchasedReport
         fields.Add("Fields.352");
         fields.Add("Fields.364");
         fields.Add("Fields.37");
+        fields.Add("Fields.4000");
         fields.Add("Fields.1109");
         fields.Add("Fields.362");
         fields.Add("Fields.317");
@@ -86,11 +87,13 @@ public class NotPurchasedReport
 
         text += "Total Files Not Purchased: <b>" + count + "</b><br/><br/>";
 
+        //headers
         Row row = new Row();
         row.add("Investor");
         row.add("Inv #");
         row.add("Loan #");
-        row.add("Borrower Name");
+        row.add("Last Name");
+        row.add("First Name");
         row.add("Loan Amount");
         row.add("Processor");
         row.add("Loan Officer");
@@ -159,7 +162,7 @@ public class NotPurchasedReport
                 text += "<td>" + col + "</td>";
                 if (Program.debug)
                 {
-                    Console.Out.Write(col);
+                    Console.Out.Write(col + "\t");
                 }
             }
             if (Program.debug)
