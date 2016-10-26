@@ -7,14 +7,14 @@ namespace ReportFunded
     class Program
     {
 
-        public static Boolean debug = true;
+        public static Boolean debug = false;
 
         static void Main(string[] args)
         {
             new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
-
-            report1();
             report2();
+            report1();
+           
 
         }
 

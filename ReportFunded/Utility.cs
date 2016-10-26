@@ -19,7 +19,7 @@ public static class Utility
         {
             message.CC.Add(new MailAddress(address));
         }
-        message.From = new MailAddress(System.Configuration.ConfigurationManager.AppSettings["Eserver_login"].ToString(), "Local Server");
+        message.From = new MailAddress(System.Configuration.ConfigurationManager.AppSettings["from"].ToString(), "Local Server");
         message.Subject = subject;
         message.Body = bodyText;
         

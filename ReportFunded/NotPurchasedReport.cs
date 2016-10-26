@@ -3,8 +3,10 @@ using EllieMae.Encompass.Client;
 using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
+using ReportFunded;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 public class NotPurchasedReport
 {
@@ -99,7 +101,16 @@ public class NotPurchasedReport
             Row line = new Row();
             foreach (String field in fields)
             {
-                line.add(data[field].ToString());
+                if(data[field].GetType() == typeof(System.String))
+                {
+                    line.add(data[field].ToString());
+                }else
+                {
+                    int value = Convert.ToInt32(data[field]); 
+                   // Console.Out.WriteLine(value.ToString("C"));
+                    line.add(value.ToString("C"));
+                }
+                
             }
             report.Add(line);
             Console.Out.Write("."); //status bar
@@ -129,11 +140,16 @@ public class NotPurchasedReport
         {
             return this.cols.ToString();
         }
+
+        internal void add(object p)
+        {
+            throw new NotImplementedException();
+        }
     };
 
     private String formatReport(List<Row> report)
     {
-        String text = "<table>";
+        String text = "<table border='1'>";
         foreach(Row row in report)
         {
             row.toString();
@@ -141,6 +157,14 @@ public class NotPurchasedReport
             foreach(String col in row.getRow())
             {
                 text += "<td>" + col + "</td>";
+                if (Program.debug)
+                {
+                    Console.Out.Write(col);
+                }
+            }
+            if (Program.debug)
+            {
+                Console.Out.WriteLine("");
             }
             text += "</tr>";
         }
