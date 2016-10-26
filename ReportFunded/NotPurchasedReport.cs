@@ -12,14 +12,15 @@ public class NotPurchasedReport
     private Session session;
     private List<Row> report;
 
-    public NotPurchasedReport(Session session)
+    public NotPurchasedReport()
     {
-        this.session = session;
         this.report = new List<Row>();
     }
 
     public String run()
     {
+        //connect
+        session = Utility.ConnectToServer();
 
         DateTime timestamp = DateTime.Now;
 
@@ -33,6 +34,7 @@ public class NotPurchasedReport
         text += "<div class='small'>Report completed in: " + DateTime.Now.Subtract(timestamp).ToString(@"ss\.fff") + " seconds</div> </body></html>";
 
         Console.Out.WriteLine("Report ready!");
+        session.End();
         return text;
     }
     private String startApplication()

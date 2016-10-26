@@ -6,56 +6,54 @@ namespace ReportFunded
 {
     class Program
     {
-        public static object ConfigurationManager { get; private set; }
+
+        public static Boolean debug = true;
 
         static void Main(string[] args)
         {
-
-            //connect
-            Session session = Utility.ConnectToServer();
-
             new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
 
-            //report1(session);
-            report2(session);
-
-            session.End();
+            report1();
+            report2();
 
         }
 
-        public static void report1(Session session)
+        public static void report1()
         {
             Console.Out.WriteLine("Funded Report started...");
 
             //run funding report
-            FundedReport report1 = new FundedReport(session);
+            FundedReport report1 = new FundedReport();
             String text = report1.run();
 
             //send email
-            List<String> to = new List<String>();
-            to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
-            List<String> cc = new List<String>();
-            cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
-            Utility.SendEmail(to, cc, "Funded Files for " + DateTime.Now.ToShortDateString(), text);
-
+            if (!debug) { 
+                List<String> to = new List<String>();
+                to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
+                List<String> cc = new List<String>();
+                cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
+                Utility.SendEmail(to, cc, "Funded Files for " + DateTime.Now.ToShortDateString(), text);
+            }
             Console.Out.WriteLine("Funded Report finished...");
         }
 
-        public static void report2(Session session)
+        public static void report2()
         {
             Console.Out.WriteLine("Not Purchased Report started...");
 
             //run report
-            NotPurchasedReport report2 = new NotPurchasedReport(session);
+            NotPurchasedReport report2 = new NotPurchasedReport();
             String text = report2.run();
 
             //send email
-            List<String> to = new List<String>();
-            to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
-            List<String> cc = new List<String>();
-            cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
-            Utility.SendEmail(to, cc, "Not Purchased Files for " + DateTime.Now.ToShortDateString(), text);
-
+            if (!debug)
+            {
+                List<String> to = new List<String>();
+                to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
+                List<String> cc = new List<String>();
+                cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
+                Utility.SendEmail(to, cc, "Not Purchased Files for " + DateTime.Now.ToShortDateString(), text);
+            }
             Console.Out.WriteLine("Not Purchased Report finished...");
             
         }

@@ -10,15 +10,13 @@ public class FundedReport
 
     private Session session;
 
-    public FundedReport(Session session)
-    {
-        this.session = session;
-    }
-
     public String run()
 	{
 
         DateTime timestamp = DateTime.Now;
+
+        //connect
+        this.session = Utility.ConnectToServer();
 
         String text = "<html><head>";
         text += "<style>table,td{border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
@@ -30,6 +28,7 @@ public class FundedReport
         text += "<div class='small'>Report completed in: " + DateTime.Now.Subtract(timestamp).ToString(@"ss\.fff") + " seconds</div> </body></html>";
 
         Console.Out.WriteLine("Report ready!");
+        session.End();
         return text;
     }
     private String startApplication()
