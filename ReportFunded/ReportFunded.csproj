@@ -41,7 +41,7 @@
     </Reference>
     <Reference Include="EncompassObjects">
       <HintPath>C:\Program Files (x86)\Encompass\EncompassObjects.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
