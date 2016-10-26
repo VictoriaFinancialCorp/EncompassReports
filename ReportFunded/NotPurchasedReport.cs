@@ -77,8 +77,11 @@ public class NotPurchasedReport
         fields.Add("Fields.1109");
         fields.Add("Fields.362");
         fields.Add("Fields.317");
+        fields.Add("Fields.Log.MS.Date.Funding");
+        SortCriterionList sortOrder = new SortCriterionList();
+        sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Funding"));
 
-        LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
+        LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 
         Console.Out.WriteLine(results.ToString());
 
@@ -97,6 +100,7 @@ public class NotPurchasedReport
         row.add("Loan Amount");
         row.add("Processor");
         row.add("Loan Officer");
+        row.add("Funding Date");
         report.Add(row);
         
         foreach (LoanReportData data in results)
@@ -104,13 +108,23 @@ public class NotPurchasedReport
             Row line = new Row();
             foreach (String field in fields)
             {
+                
                 if(data[field].GetType() == typeof(System.String))
                 {
                     line.add(data[field].ToString());
+                }
+                else if (field.ToString().Equals("Fields.Log.MS.Date.Funding"))
+                {
+                    double days = DateTime.Now.Subtract(Convert.ToDateTime(data[field])).TotalDays;
+                    line.add(Math.Floor(days).ToString());
+                }
+                else if (data[field].GetType() == typeof(System.DateTime))
+                {
+                    DateTime value = Convert.ToDateTime(data[field]);
+                    line.add(value.ToShortDateString());
                 }else
                 {
                     int value = Convert.ToInt32(data[field]); 
-                   // Console.Out.WriteLine(value.ToString("C"));
                     line.add(value.ToString("C"));
                 }
                 
