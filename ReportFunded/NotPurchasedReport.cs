@@ -56,11 +56,6 @@ public class NotPurchasedReport
         cri2.Value = DateFieldCriterion.EmptyDate;
         cri2.MatchType = OrdinalFieldMatchType.Equals;
 
-        NumericFieldCriterion laCri = new NumericFieldCriterion();
-        laCri.FieldName = "Loan.LoanAmount";
-        laCri.Value = 100000;
-        laCri.MatchType = OrdinalFieldMatchType.GreaterThanOrEquals;
-
         StringFieldCriterion folderCri = new StringFieldCriterion();
         folderCri.FieldName = "Loan.LoanFolder";
         folderCri.Value = "My Pipeline";
@@ -116,7 +111,7 @@ public class NotPurchasedReport
                 else if (field.ToString().Equals("Fields.Log.MS.Date.Funding"))
                 {
                     double days = DateTime.Now.Subtract(Convert.ToDateTime(data[field])).TotalDays;
-                    line.add(Math.Floor(days).ToString());
+                    line.add(Math.Ceiling(days).ToString());
                 }
                 else if (data[field].GetType() == typeof(System.DateTime))
                 {

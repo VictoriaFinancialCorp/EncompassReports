@@ -16,8 +16,8 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                //report1();
-                report2();
+                //reportFunded();
+                reportNotPurchased();
             }
             else
             {
@@ -25,17 +25,17 @@ namespace ReportFunded
                 switch (Int32.Parse(args[0]))
                 {
                     case 1:
-                        report1();
+                        reportFunded();
                         break;
                     case 2:
-                        report2();
+                        reportNotPurchased();
                         break;
                 }
                 
             }          
         }
 
-        public static void report1()
+        public static void reportFunded()
         {
             Console.Out.WriteLine("Funded Report started...");
 
@@ -58,7 +58,7 @@ namespace ReportFunded
             Console.Out.WriteLine("Funded Report finished...");
         }
 
-        public static void report2()
+        public static void reportNotPurchased()
         {
             Console.Out.WriteLine("Not Purchased Report started...");
 
