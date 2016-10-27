@@ -27,7 +27,7 @@ public class NotPurchasedReport
         DateTime timestamp = DateTime.Now;
 
         String text = "<html><head>";
-        text += "<style>table,td{border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
+        text += "<style>table,td{border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
         text += "</head><body>";
 
         text += startApplication();

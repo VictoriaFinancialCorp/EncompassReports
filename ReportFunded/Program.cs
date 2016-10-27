@@ -7,15 +7,32 @@ namespace ReportFunded
     class Program
     {
 
-        public static Boolean debug = true;
+        public static Boolean debug;
 
         static void Main(string[] args)
         {
             new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
-            report2();
-            report1();
-           
 
+            if (args.Length == 0)
+            {
+                debug = true;
+                //report1();
+                report2();
+            }
+            else
+            {
+                debug = false;
+                switch (Int32.Parse(args[0]))
+                {
+                    case 1:
+                        report1();
+                        break;
+                    case 2:
+                        report2();
+                        break;
+                }
+                
+            }          
         }
 
         public static void report1()
@@ -33,6 +50,10 @@ namespace ReportFunded
                 List<String> cc = new List<String>();
                 cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
                 Utility.SendEmail(to, cc, "Funded Files for " + DateTime.Now.ToShortDateString(), text);
+            }
+            else
+            {
+
             }
             Console.Out.WriteLine("Funded Report finished...");
         }
@@ -53,6 +74,10 @@ namespace ReportFunded
                 List<String> cc = new List<String>();
                 cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
                 Utility.SendEmail(to, cc, "Not Purchased Files for " + DateTime.Now.ToShortDateString(), text);
+            }
+            else 
+            {
+                System.IO.File.WriteAllText(@"NotPurchasedReport.html", text);
             }
             Console.Out.WriteLine("Not Purchased Report finished...");
             
