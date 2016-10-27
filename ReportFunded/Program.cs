@@ -8,9 +8,15 @@ namespace ReportFunded
     {
 
         public static Boolean debug;
+        public static List<String> to;
+        public static List<String> cc;
+        public static List<String> bcc;
+        public static int report = 0;
 
         static void Main(string[] args)
         {
+
+            parseArgs(args);
             new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
 
             if (args.Length == 0)
@@ -22,7 +28,7 @@ namespace ReportFunded
             else
             {
                 debug = false;
-                switch (Int32.Parse(args[0]))
+                switch (report)
                 {
                     case 1:
                         reportFunded();
@@ -35,6 +41,47 @@ namespace ReportFunded
             }          
         }
 
+        public static void parseArgs(String[] args)
+        {
+            to = new List<String>();
+            cc = new List<String>();
+            bcc = new List<String>();//TODO: add bcc feature to reports
+
+            HashSet<String> flags = new HashSet<String>();
+            flags.Add("-to");
+            flags.Add("-cc");
+            flags.Add("-bcc");
+            flags.Add("-r");//report number
+
+            String currFlag = null;
+
+            for(int i =0; i < args.Length; i++)
+            {
+                if (flags.Contains(args[i]))
+                {
+                    currFlag = args[i];
+                }
+                else
+                {
+                    if (currFlag.Equals("-to"))
+                    {
+                        to.Add(args[i]);
+                    }
+                    else if(currFlag.Equals("-cc"))
+                    {
+                        cc.Add(args[i]);
+                    }else if (currFlag.Equals("-bcc"))
+                    {
+                        bcc.Add(args[i]);
+                    }
+                    else if (currFlag.Equals("-r"))
+                    {
+                        report = int.Parse(args[i]);
+                    }
+                }
+            }
+        }
+
         public static void reportFunded()
         {
             Console.Out.WriteLine("Funded Report started...");
@@ -45,15 +92,11 @@ namespace ReportFunded
 
             //send email
             if (!debug) { 
-                List<String> to = new List<String>();
-                to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
-                List<String> cc = new List<String>();
-                cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
                 Utility.SendEmail(to, cc, "Funded Files for " + DateTime.Now.ToShortDateString(), text);
             }
             else
             {
-
+                System.IO.File.WriteAllText(@"FundedReport.html", text);
             }
             Console.Out.WriteLine("Funded Report finished...");
         }
@@ -69,10 +112,6 @@ namespace ReportFunded
             //send email
             if (!debug)
             {
-                List<String> to = new List<String>();
-                to.Add(System.Configuration.ConfigurationManager.AppSettings["to1"].ToString());
-                List<String> cc = new List<String>();
-                cc.Add(System.Configuration.ConfigurationManager.AppSettings["cc1"].ToString());
                 Utility.SendEmail(to, cc, "Not Purchased Files for " + DateTime.Now.ToShortDateString(), text);
             }
             else 
