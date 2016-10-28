@@ -22,23 +22,39 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                //reportFunded();
-                reportNotPurchased();
+                report = 3;//manually choose report to run
             }
             else
             {
                 debug = false;
-                switch (report)
-                {
-                    case 1:
-                        reportFunded();
-                        break;
-                    case 2:
-                        reportNotPurchased();
-                        break;
-                }
+            }
+            String text = null;
+            switch (report)
+            {
                 
-            }          
+                case 1:
+                    FundedReport report1 = new FundedReport();
+                    text = report1.run();
+                    outputReport("Funded Report", text);
+                    break;
+                case 2:
+                    NotPurchasedReport report2 = new NotPurchasedReport();
+                    text = report2.run();
+                    outputReport("Not Purchased Report", text);
+                    break;
+                case 3:
+                    NotCTCReport report3 = new NotCTCReport();
+                    text = report3.run();
+                    outputReport("Not CTC Report", text);
+                    break;
+                default:
+                    Console.Out.WriteLine("[Error]: No report chosen");
+                    break;
+                    
+            }
+            Console.Out.WriteLine("Report Finished");
+
+                     
         }
 
         public static void parseArgs(String[] args)
@@ -94,48 +110,19 @@ namespace ReportFunded
             }
         }
 
-        public static void reportFunded()
+        public static void outputReport(String reportName, String message)
         {
-            Console.Out.WriteLine("Funded Report started...");
-
-            //run funding report
-            FundedReport report1 = new FundedReport();
-            String text = report1.run();
-
-            //send email
-            if (!debug) { 
-                Utility.SendEmail(to, cc, "Funded Files for " + DateTime.Now.ToShortDateString(), text);
-            }
-            else
-            {
-                System.IO.File.WriteAllText(@"FundedReport.html", text);
-            }
-            Console.Out.WriteLine("Funded Report finished...");
-        }
-
-        public static void reportNotPurchased()
-        {
-            Console.Out.WriteLine("Not Purchased Report started...");
-
-            //run report
-            NotPurchasedReport report2 = new NotPurchasedReport();
-            String text = report2.run();
-
             //send email
             if (!debug)
             {
-                Utility.SendEmail(to, cc, "Not Purchased Files for " + DateTime.Now.ToShortDateString(), text);
+                Utility.SendEmail(to, cc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
             }
-            else 
+            else
             {
-                System.IO.File.WriteAllText(@"NotPurchasedReport.html", text);
+                System.IO.File.WriteAllText(@"report.html", message);
             }
-            Console.Out.WriteLine("Not Purchased Report finished...");
-            
         }
-
-
-
+        
     }
 
 }
