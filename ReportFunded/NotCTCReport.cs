@@ -26,7 +26,7 @@ public class NotCTCReport
         DateTime timestamp = DateTime.Now;
 
         String text = "<html><head>";
-        text += "<style>table,td{border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
+        text += "<style>table,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
         text += "</head><body>";
 
         text += startApplication();
@@ -67,7 +67,9 @@ public class NotCTCReport
         fields.Add("Fields.Log.MS.Date.Started");
         fields.Add("Fields.Log.MS.Date.Submittal");
         fields.Add("Fields.364");
-        fields.Add("Fields.1868");
+        //fields.Add("Fields.1868");
+        fields.Add("Fields.4002");
+        fields.Add("Fields.4000");
         fields.Add("Fields.11");
         fields.Add("Fields.362");
         fields.Add("Fields.317");
@@ -90,7 +92,7 @@ public class NotCTCReport
         row.add("Date Started");
         row.add("Date Submitted");
         row.add("Loan #");
-        row.add("Borr Name");
+        row.add("Borrower Name");
         row.add("Address");
         row.add("Processor");
         row.add("Loan Officer");
@@ -113,8 +115,9 @@ public class NotCTCReport
             }
             
             line.add(data["Fields.364"].ToString());
-            line.add(data["Fields.1868"].ToString());
-            line.add(data["Fields.11"].ToString());
+            //line.add(data["Fields.1868"].ToString());
+            line.add(data["Fields.4002"].ToString().ToUpper()+", "+ data["Fields.4000"].ToString().ToUpper());
+            line.add(data["Fields.11"].ToString().ToUpper());
             line.add(data["Fields.362"].ToString());
             line.add(data["Fields.317"].ToString());
 

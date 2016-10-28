@@ -28,7 +28,7 @@ public class FundedReport
         this.session = Utility.ConnectToServer();
 
         String text = "<html><head>";
-        text += "<style>table,td{border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
+        text += "<style>table,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
         text += "</head><body>";
 
         text += startApplication();
@@ -72,15 +72,14 @@ public class FundedReport
         int count = results.Count;
         Console.Out.WriteLine("Total Files Funded " + cri.Value.ToShortDateString() + ": " + count);
 
-        text += "Total Files Funded: <b>" + count + "</b><br/><br/>";
+        text += "Total Files Funded on "+cri.Value.ToShortDateString()+": <b>" + count + "</b><br/><br/>";
 
         //headers
         Row row = new Row();
         row.add("Investor");
         row.add("Inv #");
         row.add("Loan #");
-        row.add("Last Name");
-        row.add("First Name");
+        row.add("Borrower Name");
         row.add("Loan Amount");
         row.add("Processor");
         row.add("Loan Officer");
@@ -90,20 +89,16 @@ public class FundedReport
         foreach (LoanReportData data in results)
         {
             Row line = new Row();
-            foreach (String field in fields)
-            {
-                if (data[field].GetType() == typeof(System.String))
-                {
-                    line.add(data[field].ToString());
-                }
-                else
-                {
-                    int value = Convert.ToInt32(data[field]);
-                    // Console.Out.WriteLine(value.ToString("C"));
-                    line.add(value.ToString("C"));
-                }
+           
+            line.add(data["Fields.VEND.X263"].ToString());
+            line.add(data["Fields.352"].ToString());
+            line.add(data["Fields.364"].ToString());
+            line.add(data["Fields.37"].ToString().ToUpper() +", " + data["Fields.4000"].ToString().ToUpper());
+              
+            line.add(Convert.ToInt32(data["Fields.1109"]).ToString("C"));
+            line.add(data["Fields.362"].ToString());
+            line.add(data["Fields.317"].ToString());
 
-            }
             report.Add(line);
             Console.Out.Write("."); //status bar
         }
