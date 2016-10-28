@@ -65,14 +65,26 @@ namespace ReportFunded
                 {
                     if (currFlag.Equals("-to"))
                     {
-                        to.Add(args[i]);
+                        String[] temp = args[i].Split(',');
+                        foreach (String t in temp) {
+                            to.Add(t);
+                        }
                     }
                     else if(currFlag.Equals("-cc"))
                     {
-                        cc.Add(args[i]);
-                    }else if (currFlag.Equals("-bcc"))
+                        String[] temp = args[i].Split(',');
+                        foreach (String t in temp)
+                        {
+                            cc.Add(t);
+                        }
+                    }
+                    else if (currFlag.Equals("-bcc"))
                     {
-                        bcc.Add(args[i]);
+                        String[] temp = args[i].Split(',');
+                        foreach (String t in temp)
+                        {
+                            bcc.Add(t);
+                        }
                     }
                     else if (currFlag.Equals("-r"))
                     {
