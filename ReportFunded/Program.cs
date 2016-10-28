@@ -45,7 +45,7 @@ namespace ReportFunded
                 case 3:
                     NotCTCReport report3 = new NotCTCReport();
                     text = report3.run();
-                    outputReport("Not CTC Report", text);
+                    outputReport("Not CTC Report < 60 days", text);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");

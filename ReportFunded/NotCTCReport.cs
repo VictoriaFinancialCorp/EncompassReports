@@ -6,7 +6,6 @@ using EllieMae.Encompass.Reporting;
 using ReportFunded;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 public class NotCTCReport
 {
@@ -53,8 +52,8 @@ public class NotCTCReport
 
         DateFieldCriterion cri2 = new DateFieldCriterion();
         cri2.FieldName = "Fields.Log.MS.Date.Started";
-        cri2.Value = DateTime.Now.AddDays(60);//60 days
-        cri2.MatchType = OrdinalFieldMatchType.LessThanOrEquals;
+        cri2.Value = DateTime.Today.AddDays(-60);  //last 60 days
+        cri2.MatchType = OrdinalFieldMatchType.GreaterThanOrEquals;
 
         StringFieldCriterion folderCri = new StringFieldCriterion();
         folderCri.FieldName = "Loan.LoanFolder";
@@ -64,25 +63,26 @@ public class NotCTCReport
         QueryCriterion fullQuery = folderCri.And(cri.And(cri2));
 
         StringList fields = new StringList();
-        fields.Add("Fields.Pipeline.LastCompletedMilestone");
+        fields.Add("Fields.Log.MS.CurrentMilestone");
         fields.Add("Fields.Log.MS.Date.Started");
         fields.Add("Fields.Log.MS.Date.Submittal");
         fields.Add("Fields.364");
-        fields.Add("Fields.Pipeline.BorrowerName");
+        fields.Add("Fields.1868");
         fields.Add("Fields.11");
         fields.Add("Fields.362");
         fields.Add("Fields.317");
+
         SortCriterionList sortOrder = new SortCriterionList();
-        sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Started",SortOrder.Descending));
+        sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Started",SortOrder.Ascending));
 
         LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 
         Console.Out.WriteLine(results.ToString());
 
         int count = results.Count;
-        Console.Out.WriteLine("Total Files Not CTC " + DateTime.Now.ToShortDateString() + ": " + count);
+        Console.Out.WriteLine("Total Files Not CTC " + ": " + count);
 
-        text += "Total Files Not CTC: <b>" + count + "</b><br/><br/>";
+        text += "Total Files Not CTC last 60 days: <b>" + count + "</b><br/><br/>";
 
         //headers
         Row row = new Row();
@@ -98,15 +98,25 @@ public class NotCTCReport
 
         foreach (LoanReportData data in results)
         {
+
             Row line = new Row();
-            line.add(data["Field.Pipeline.LastCompletedMilestone"]);
-            line.add(data["Field.Log.MS.Date.Started"]);
-            line.add(data["Field.Log.MS.Date.Submittal"]);
-            line.add(data["Field.364"]);
-            line.add(data["Field.Pipeline.BorrowerName"]);
-            line.add(data["Field.11"]);
-            line.add(data["Field.362"]);
-            line.add(data["Field.317"]);
+            line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
+            line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
+
+            if (Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]) == DateTime.MinValue)
+            {
+                line.add(" ");
+            }
+            else
+            {
+                line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToShortDateString());
+            }
+            
+            line.add(data["Fields.364"].ToString());
+            line.add(data["Fields.1868"].ToString());
+            line.add(data["Fields.11"].ToString());
+            line.add(data["Fields.362"].ToString());
+            line.add(data["Fields.317"].ToString());
 
 
            /* foreach (String field in fields)
@@ -151,9 +161,20 @@ public class NotCTCReport
         {
             this.cols = new List<String>();
         }
-        public void add(String element)
+       /* public void add(String element)
         {
-            this.cols.Add(element);
+            if(element.GetType() == typeof(System.String))
+            {
+                this.cols.Add(element.ToString());
+            }else if (element.GetType() == typeof(System.DateTime))
+            {
+                this.cols.Add(Convert.ToDateTime(element).ToShortDateString());
+            }
+
+        }*/
+        public void add(String col)
+        {
+            this.cols.Add(col);
         }
         public List<String> getRow()
         {
@@ -164,10 +185,7 @@ public class NotCTCReport
             return this.cols.ToString();
         }
 
-        internal void add(object p)
-        {
-            throw new NotImplementedException();
-        }
+   
     };
 
     private String formatReport(List<Row> report)
