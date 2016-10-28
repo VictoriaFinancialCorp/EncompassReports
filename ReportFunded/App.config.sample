@@ -7,8 +7,5 @@
     <add key="Eserver_address" value="EncompassServerAddress" />
     <add key="Eserver_login" value="EncompassLogin"/>
     <add key="Eserver_pw" value="EncompassPassword"/>
-    <add key="to1" value="ToEmail"/>
-    <add key="cc1" value="CCEmail"/>
-    <add key="from" value="FromEmail"/>
   </appSettings>
 </configuration>
