@@ -28,3 +28,10 @@ View SDK Manual for more details
  - -to [string] to email
  - -cc [string] cc email
  - -bcc [string] bcc email //not yet implemented
+
+###Debug mode
+When executing from IDE or without any arguments, program will run in "debug mode"
+This means it will not attempt to email the specified report. Instead, it will save the report as `report.html` in the current directory.
+
+###SMTP server
+Currently, code is defaulted to use a smtp server at `localhost` to send email.
