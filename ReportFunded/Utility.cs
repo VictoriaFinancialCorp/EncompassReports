@@ -39,4 +39,16 @@ public static class Utility
         Console.Out.WriteLine("connected.");
         return s;
     }
+    public static String toShortDate(Object datetime)
+    {
+        DateTime temp = Convert.ToDateTime(datetime);
+        if (temp == DateTime.MinValue)
+        {
+            return " ";
+        }
+        else
+        {
+            return temp.ToShortDateString();
+        }
+    }
 }

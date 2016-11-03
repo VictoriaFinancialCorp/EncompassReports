@@ -63,16 +63,49 @@ public class NotCTCReport
         QueryCriterion fullQuery = folderCri.And(cri.And(cri2));
 
         StringList fields = new StringList();
+        Row row = new Row();
+        row.add("Milestone");
         fields.Add("Fields.Log.MS.CurrentMilestone");
+        
+        row.add("Date Started");
         fields.Add("Fields.Log.MS.Date.Started");
+        
+        row.add("Date Submitted");
         fields.Add("Fields.Log.MS.Date.Submittal");
+        
+        row.add("Loan #");
         fields.Add("Fields.364");
-        //fields.Add("Fields.1868");
+
+        row.add("Borrower Name");
         fields.Add("Fields.4002");
         fields.Add("Fields.4000");
+        
+        row.add("Address");
         fields.Add("Fields.11");
+
+        row.add("Loan Amount");
+        fields.Add("Fields.1109");
+
+        row.add("Purpose");
+        fields.Add("Fields.19");
+
+        row.add("Term");
+        fields.Add("Fields.4");
+
+        row.add("Rate");
+        fields.Add("Fields.3");
+
+        row.add("Locked Date");
+        fields.Add("Fields.761");
+
+        row.add("Processor");
         fields.Add("Fields.362");
+
+        row.add("Loan Officer");
         fields.Add("Fields.317");
+      
+        report.Add(row);
+
 
         SortCriterionList sortOrder = new SortCriterionList();
         sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Started",SortOrder.Ascending));
@@ -86,66 +119,28 @@ public class NotCTCReport
 
         text += "Total Files Not CTC last 60 days: <b>" + count + "</b><br/><br/>";
 
-        //headers
-        Row row = new Row();
-        row.add("Milestone");
-        row.add("Date Started");
-        row.add("Date Submitted");
-        row.add("Loan #");
-        row.add("Borrower Name");
-        row.add("Address");
-        row.add("Processor");
-        row.add("Loan Officer");
-        report.Add(row);
-
+        
+        //iterate through query and format
         foreach (LoanReportData data in results)
         {
 
             Row line = new Row();
             line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
             line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
-
-            if (Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]) == DateTime.MinValue)
-            {
-                line.add(" ");
-            }
-            else
-            {
-                line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToShortDateString());
-            }
-            
+            line.add(Utility.toShortDate(data["Fields.Log.MS.Date.Submittal"]));
             line.add(data["Fields.364"].ToString());
-            //line.add(data["Fields.1868"].ToString());
             line.add(data["Fields.4002"].ToString().ToUpper()+", "+ data["Fields.4000"].ToString().ToUpper());
             line.add(data["Fields.11"].ToString().ToUpper());
+            line.add(Convert.ToInt32(data["Fields.1109"]).ToString("C"));
+            line.add(data["Fields.19"].ToString());
+            line.add(Convert.ToInt32(data["Fields.4"]).ToString());
+            line.add(Convert.ToDouble(data["Fields.3"]).ToString("F3"));
+            line.add(Utility.toShortDate(data["Fields.761"]));
             line.add(data["Fields.362"].ToString());
             line.add(data["Fields.317"].ToString());
 
 
-           /* foreach (String field in fields)
-            {
-
-                if (data[field].GetType() == typeof(System.String))
-                {
-                    line.add(data[field].ToString());
-                }
-                else if (field.ToString().Equals("Fields.Log.MS.Date.Funding"))
-                {
-                    double days = DateTime.Now.Subtract(Convert.ToDateTime(data[field])).TotalDays;
-                    line.add(Math.Ceiling(days).ToString());
-                }
-                else if (data[field].GetType() == typeof(System.DateTime))
-                {
-                    DateTime value = Convert.ToDateTime(data[field]);
-                    line.add(value.ToShortDateString());
-                }
-                else
-                {
-                    int value = Convert.ToInt32(data[field]);
-                    line.add(value.ToString("C"));
-                }
-
-            }*/
+           
             report.Add(line);
             Console.Out.Write("."); //status bar
         }
@@ -164,17 +159,7 @@ public class NotCTCReport
         {
             this.cols = new List<String>();
         }
-       /* public void add(String element)
-        {
-            if(element.GetType() == typeof(System.String))
-            {
-                this.cols.Add(element.ToString());
-            }else if (element.GetType() == typeof(System.DateTime))
-            {
-                this.cols.Add(Convert.ToDateTime(element).ToShortDateString());
-            }
-
-        }*/
+      
         public void add(String col)
         {
             this.cols.Add(col);
