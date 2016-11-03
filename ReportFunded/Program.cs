@@ -22,7 +22,7 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                report = 3;//manually choose report to run
+                report = 4;//manually choose report to run
             }
             else
             {
@@ -46,6 +46,11 @@ namespace ReportFunded
                     NotCTCReport report3 = new NotCTCReport();
                     text = report3.run();
                     outputReport("Not CTC Report < 60 days", text);
+                    break;
+                case 4:
+                    ProcessorsReport report4 = new ProcessorsReport();
+                    text = report4.run();
+                    outputReport("Processors Report", text);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");
