@@ -25,9 +25,11 @@ public class ProcessorsReport
 
         DateTime timestamp = DateTime.Now;
 
-        String text = "<html><head>";
-        text += "<style>table,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
-        text += "</head><body>";
+        String text = "<html><head><style>";
+        text += "table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}";
+        text += "table{margin-top:2em;}";
+        text += ".small{font-size:.7em;}";
+        text += "</style></head><body>";
 
         text += startApplication();
 
@@ -121,11 +123,33 @@ public class ProcessorsReport
 
         text += "Total Files:<b>" + count + "</b><br/><br/>";
 
-        
+        String currProcessor = "";//"null" string
+        count = 0;
+
         //iterate through query and format
         foreach (LoanReportData data in results)
         {
+            if (!currProcessor.Equals(data["Fields.362"].ToString()))
+            {
+                Row subheader = new Row();
+                subheader.setHeader(true);
+                subheader.add("Processor: ");
+                subheader.add(currProcessor);
+                subheader.add("Count: " + count);
+                report.Add(subheader);
+                text += formatReport(report);
 
+                // reset
+                count = 0;
+                report.Clear();
+                currProcessor = data["Fields.362"].ToString();
+
+                report.Add(header);
+
+                
+
+            }
+            count++;
             Row line = new Row();
             line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
             line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
@@ -149,7 +173,7 @@ public class ProcessorsReport
         Console.Out.WriteLine("");
         results.Close();
 
-        text += formatReport(report);
+        //text += formatReport(report);
 
         return text;
 
@@ -163,7 +187,6 @@ public class ProcessorsReport
             this.cols = new List<String>();
             this.header = false;
         }
-
       
         public void add(String col)
         {
