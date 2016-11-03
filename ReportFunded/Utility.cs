@@ -5,7 +5,7 @@ using System.Net.Mail;
 
 public static class Utility
 {
-    public static void SendEmail(List<String> to, List<String> cc, String subject, String bodyText)
+    public static void SendEmail(List<String> to, List<String> cc, List<String> bcc, String subject, String bodyText)
     {
         Console.Out.WriteLine("Generating email...");
 
@@ -19,12 +19,16 @@ public static class Utility
         {
             message.CC.Add(new MailAddress(address));
         }
-        message.From = new MailAddress(System.Configuration.ConfigurationManager.AppSettings["from"].ToString(), "Local Server");
+        foreach (String address in bcc)
+        {
+            message.Bcc.Add(new MailAddress(address));
+        }
+        message.From = new MailAddress(System.Configuration.ConfigurationManager.AppSettings["from"].ToString(), "Reporting Server");
         message.Subject = subject;
         message.Body = bodyText;
         
 
-        SmtpClient smtp = new SmtpClient("localhost");
+        SmtpClient smtp = new SmtpClient(System.Configuration.ConfigurationManager.AppSettings["smtp_server"].ToString());
         smtp.Send(message);
         
 

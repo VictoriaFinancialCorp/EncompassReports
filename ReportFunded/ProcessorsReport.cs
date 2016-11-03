@@ -27,7 +27,7 @@ public class ProcessorsReport
 
         String text = "<html><head><style>";
         text += "table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}";
-        text += "table{margin-top:2em;}";
+        text += "table{border:2px solid grey}";
         text += ".small{font-size:.7em;}";
         text += "</style></head><body>";
 
@@ -121,7 +121,7 @@ public class ProcessorsReport
         int count = results.Count;
         Console.Out.WriteLine("Total Files" + ": " + count);
 
-        text += "Total Files:<b>" + count + "</b><br/><br/>";
+        text += "Total Files:<b>" + count + "</b> active last 90 days<br/><br/>";
 
         String currProcessor = "";//"null" string
         count = 0;
@@ -138,6 +138,7 @@ public class ProcessorsReport
                 subheader.add("Count: " + count);
                 report.Add(subheader);
                 text += formatReport(report);
+                text += "<br/><br/>";
 
                 // reset
                 count = 0;

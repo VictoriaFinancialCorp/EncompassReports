@@ -22,7 +22,7 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                report = 1;//manually choose report to run
+                report = 4;//manually choose report to run
             }
             else
             {
@@ -66,7 +66,7 @@ namespace ReportFunded
         {
             to = new List<String>();
             cc = new List<String>();
-            bcc = new List<String>();//TODO: add bcc feature to reports
+            bcc = new List<String>();
 
             HashSet<String> flags = new HashSet<String>();
             flags.Add("-to");
@@ -120,7 +120,7 @@ namespace ReportFunded
             //send email
             if (!debug)
             {
-                Utility.SendEmail(to, cc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
+                Utility.SendEmail(to, cc, bcc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
             }
             else
             {
