@@ -22,7 +22,7 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                report = 4;//manually choose report to run
+                report = 1;//manually choose report to run
             }
             else
             {

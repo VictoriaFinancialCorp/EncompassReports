@@ -26,7 +26,7 @@ public class NotCTCReport
         DateTime timestamp = DateTime.Now;
 
         String text = "<html><head>";
-        text += "<style>table,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
+        text += "<style>table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
         text += "</head><body>";
 
         text += startApplication();
@@ -64,6 +64,8 @@ public class NotCTCReport
 
         StringList fields = new StringList();
         Row row = new Row();
+        row.setHeader(true);
+        
         row.add("Milestone");
         fields.Add("Fields.Log.MS.CurrentMilestone");
         
@@ -152,29 +154,6 @@ public class NotCTCReport
         return text;
 
     }
-    public class Row
-    {
-        List<String> cols;
-        public Row()
-        {
-            this.cols = new List<String>();
-        }
-      
-        public void add(String col)
-        {
-            this.cols.Add(col);
-        }
-        public List<String> getRow()
-        {
-            return cols;
-        }
-        public String toString()
-        {
-            return this.cols.ToString();
-        }
-
-   
-    };
 
     private String formatReport(List<Row> report)
     {
@@ -185,7 +164,14 @@ public class NotCTCReport
             text += "<tr>";
             foreach (String col in row.getRow())
             {
-                text += "<td>" + col + "</td>";
+                if (row.isHeader())
+                {
+                    text += "<th>" + col + "</th>";
+                }
+                else
+                {
+                    text += "<td>" + col + "</td>";
+                }
                 if (Program.debug)
                 {
                     Console.Out.Write(col + "\t");
