@@ -7,13 +7,13 @@ using ReportFunded;
 using System;
 using System.Collections.Generic;
 
-public class NotCTCReport
+public class ProcessorsReport
 {
 
     private Session session;
     private List<Row> report;
 
-    public NotCTCReport()
+    public ProcessorsReport()
     {
         this.report = new List<Row>();
     }
@@ -25,9 +25,11 @@ public class NotCTCReport
 
         DateTime timestamp = DateTime.Now;
 
-        String text = "<html><head>";
-        text += "<style>table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
-        text += "</head><body>";
+        String text = "<html><head><style>";
+        text += "table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}";
+        text += "table{border:2px solid grey}";
+        text += ".small{font-size:.7em;}";
+        text += "</style></head><body>";
 
         text += startApplication();
 
@@ -52,7 +54,7 @@ public class NotCTCReport
 
         DateFieldCriterion cri2 = new DateFieldCriterion();
         cri2.FieldName = "Fields.Log.MS.Date.Started";
-        cri2.Value = DateTime.Today.AddDays(-60);  //last 60 days
+        cri2.Value = DateTime.Today.AddDays(-90);  //last 90 days
         cri2.MatchType = OrdinalFieldMatchType.GreaterThanOrEquals;
 
         StringFieldCriterion folderCri = new StringFieldCriterion();
@@ -63,69 +65,92 @@ public class NotCTCReport
         QueryCriterion fullQuery = folderCri.And(cri.And(cri2));
 
         StringList fields = new StringList();
-        Row row = new Row();
-        row.setHeader(true);
-        
-        row.add("Milestone");
+        Row header = new Row();
+        header.setHeader(true);
+        header.add("Milestone");
         fields.Add("Fields.Log.MS.CurrentMilestone");
-        
-        row.add("Date Started");
+
+        header.add("Date Started");
         fields.Add("Fields.Log.MS.Date.Started");
-        
-        row.add("Date Submitted");
+
+        header.add("Date Submitted");
         fields.Add("Fields.Log.MS.Date.Submittal");
-        
-        row.add("Loan #");
+
+        header.add("Loan #");
         fields.Add("Fields.364");
 
-        row.add("Borrower Name");
+        header.add("Borrower Name");
         fields.Add("Fields.4002");
         fields.Add("Fields.4000");
-        
-        row.add("Address");
+
+        header.add("Address");
         fields.Add("Fields.11");
 
-        row.add("Loan Amount");
+        header.add("Loan Amount");
         fields.Add("Fields.1109");
 
-        row.add("Purpose");
+        header.add("Purpose");
         fields.Add("Fields.19");
 
-        row.add("Term");
+        header.add("Term");
         fields.Add("Fields.4");
 
-        row.add("Rate");
+        header.add("Rate");
         fields.Add("Fields.3");
 
-        row.add("Locked Date");
+        header.add("Locked Date");
         fields.Add("Fields.761");
 
-        row.add("Processor");
+        header.add("Processor");
         fields.Add("Fields.362");
 
-        row.add("Loan Officer");
+        header.add("Loan Officer");
         fields.Add("Fields.317");
       
-        report.Add(row);
+        report.Add(header);
 
 
         SortCriterionList sortOrder = new SortCriterionList();
-        sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Started",SortOrder.Ascending));
+        sortOrder.Add(new SortCriterion("Fields.362", SortOrder.Ascending));
+        sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Started",SortOrder.Descending));
 
         LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 
-        Console.Out.WriteLine(results.ToString());
+        //Console.Out.WriteLine(results.ToString());
 
         int count = results.Count;
-        Console.Out.WriteLine("Total Files Not CTC " + ": " + count);
+        Console.Out.WriteLine("Total Files" + ": " + count);
 
-        text += "Total Files Not CTC last 60 days: <b>" + count + "</b><br/><br/>";
+        text += "Total Files:<b>" + count + "</b> active last 90 days<br/><br/>";
 
-        
+        String currProcessor = "";//"null" string
+        count = 0;
+
         //iterate through query and format
         foreach (LoanReportData data in results)
         {
+            if (!currProcessor.Equals(data["Fields.362"].ToString()))
+            {
+                Row subheader = new Row();
+                subheader.setHeader(true);
+                subheader.add("Processor: ");
+                subheader.add(currProcessor);
+                subheader.add("Count: " + count);
+                report.Add(subheader);
+                text += formatReport(report);
+                text += "<br/><br/>";
 
+                // reset
+                count = 0;
+                report.Clear();
+                currProcessor = data["Fields.362"].ToString();
+
+                report.Add(header);
+
+                
+
+            }
+            count++;
             Row line = new Row();
             line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
             line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
@@ -149,7 +174,7 @@ public class NotCTCReport
         Console.Out.WriteLine("");
         results.Close();
 
-        text += formatReport(report);
+        //text += formatReport(report);
 
         return text;
 
@@ -157,10 +182,13 @@ public class NotCTCReport
 
     private String formatReport(List<Row> report)
     {
+        HashSet<String> processors = new HashSet<String>();
+
+
         String text = "<table border='1'>";
         foreach (Row row in report)
         {
-            row.toString();
+            //row.toString();
             text += "<tr>";
             foreach (String col in row.getRow())
             {

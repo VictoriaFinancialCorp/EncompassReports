@@ -22,7 +22,7 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                report = 3;//manually choose report to run
+                report = 4;//manually choose report to run
             }
             else
             {
@@ -47,6 +47,11 @@ namespace ReportFunded
                     text = report3.run();
                     outputReport("Not CTC Report < 60 days", text);
                     break;
+                case 4:
+                    ProcessorsReport report4 = new ProcessorsReport();
+                    text = report4.run();
+                    outputReport("Processors Report", text);
+                    break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");
                     break;
@@ -61,7 +66,7 @@ namespace ReportFunded
         {
             to = new List<String>();
             cc = new List<String>();
-            bcc = new List<String>();//TODO: add bcc feature to reports
+            bcc = new List<String>();
 
             HashSet<String> flags = new HashSet<String>();
             flags.Add("-to");
@@ -115,7 +120,7 @@ namespace ReportFunded
             //send email
             if (!debug)
             {
-                Utility.SendEmail(to, cc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
+                Utility.SendEmail(to, cc, bcc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
             }
             else
             {

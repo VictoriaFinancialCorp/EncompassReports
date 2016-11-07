@@ -28,7 +28,7 @@ public class FundedReport
         this.session = Utility.ConnectToServer();
 
         String text = "<html><head>";
-        text += "<style>table,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
+        text += "<style>table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;}.small{font-size:.7em;}</style>";
         text += "</head><body>";
 
         text += startApplication();
@@ -76,6 +76,7 @@ public class FundedReport
 
         //headers
         Row row = new Row();
+        row.setHeader(true);
         row.add("Investor");
         row.add("Inv #");
         row.add("Loan #");
@@ -114,31 +115,7 @@ public class FundedReport
         
 
     }
-    public class Row
-    {
-        List<String> cols;
-        public Row()
-        {
-            this.cols = new List<String>();
-        }
-        public void add(String element)
-        {
-            this.cols.Add(element);
-        }
-        public List<String> getRow()
-        {
-            return cols;
-        }
-        public String toString()
-        {
-            return this.cols.ToString();
-        }
 
-        internal void add(object p)
-        {
-            throw new NotImplementedException();
-        }
-    };
 
     private String formatReport(List<Row> report)
     {
@@ -149,7 +126,14 @@ public class FundedReport
             text += "<tr>";
             foreach (String col in row.getRow())
             {
-                text += "<td>" + col + "</td>";
+                if (row.isHeader())
+                {
+                    text += "<th>" + col + "</th>";
+                }
+                else
+                {
+                    text += "<td>" + col + "</td>";
+                }
                 if (Program.debug)
                 {
                     Console.Out.Write(col+"\t");
