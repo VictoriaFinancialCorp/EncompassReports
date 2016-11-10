@@ -84,11 +84,11 @@ namespace ReportFunded
             cc = new List<String>();
             bcc = new List<String>();
 
-            HashSet<String> flags = new HashSet<String>();
-            flags.Add("-to");
-            flags.Add("-cc");
-            flags.Add("-bcc");
-            flags.Add("-r");//report number
+            HashSet<String> flags = new HashSet<String> {
+                "-to", "-cc", "-bcc", "-r"
+            };
+         
+
 
             String currFlag = null;
 
