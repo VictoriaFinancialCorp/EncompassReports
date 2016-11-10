@@ -15,6 +15,12 @@ namespace ReportFunded
 
         static void Main(string[] args)
         {
+            List<String> reports = new List<String> {
+                "Funded Report",
+                "Not Purchased Report",
+                "Not CTC Report < 60 days",
+                "Processors Report"
+            };
 
             parseArgs(args);
             new EllieMae.Encompass.Runtime.RuntimeServices().Initialize();
@@ -22,7 +28,17 @@ namespace ReportFunded
             if (args.Length == 0)
             {
                 debug = true;
-                report = 4;//manually choose report to run
+                Console.Out.WriteLine("----------------------");
+                Console.Out.WriteLine("Select report to run:");
+                for (int i =0;i<reports.Count;i++)
+                {
+                    Console.Out.WriteLine(i+" "+ reports[i]);
+                }
+                Console.Out.WriteLine("----------------------");
+                int input = Int32.Parse(Console.In.ReadLine());
+                report = input;
+                Console.Out.WriteLine("Selection: "+reports[input]);
+
             }
             else
             {
@@ -32,25 +48,25 @@ namespace ReportFunded
             switch (report)
             {
                 
-                case 1:
+                case 0:
                     FundedReport report1 = new FundedReport();
                     text = report1.run();
-                    outputReport("Funded Report", text);
+                    outputReport(reports[0], text);
                     break;
-                case 2:
+                case 1:
                     NotPurchasedReport report2 = new NotPurchasedReport();
                     text = report2.run();
-                    outputReport("Not Purchased Report", text);
+                    outputReport(reports[1], text);
                     break;
-                case 3:
+                case 2:
                     NotCTCReport report3 = new NotCTCReport();
                     text = report3.run();
-                    outputReport("Not CTC Report < 60 days", text);
+                    outputReport(reports[2], text);
                     break;
-                case 4:
+                case 3:
                     ProcessorsReport report4 = new ProcessorsReport();
                     text = report4.run();
-                    outputReport("Processors Report", text);
+                    outputReport(reports[3], text);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");

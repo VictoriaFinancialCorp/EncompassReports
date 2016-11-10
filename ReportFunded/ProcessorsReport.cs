@@ -13,6 +13,8 @@ public class ProcessorsReport
     private Session session;
     private List<Row> report;
 
+    private int days = 180; //report in past num of days
+
     public ProcessorsReport()
     {
         this.report = new List<Row>();
@@ -54,7 +56,7 @@ public class ProcessorsReport
 
         DateFieldCriterion cri2 = new DateFieldCriterion();
         cri2.FieldName = "Fields.Log.MS.Date.Started";
-        cri2.Value = DateTime.Today.AddDays(-90);  //last 90 days
+        cri2.Value = DateTime.Today.AddDays(-1*days);  //last num days
         cri2.MatchType = OrdinalFieldMatchType.GreaterThanOrEquals;
 
         StringFieldCriterion folderCri = new StringFieldCriterion();
@@ -121,7 +123,7 @@ public class ProcessorsReport
         int count = results.Count;
         Console.Out.WriteLine("Total Files" + ": " + count);
 
-        text += "Total Files:<b>" + count + "</b> active last 90 days<br/><br/>";
+        text += "Total Files:<b>" + count + "</b> active last "+ days + " days<br/><br/>";
 
         String currProcessor = "";//"null" string
         count = 0;
