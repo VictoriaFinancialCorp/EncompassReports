@@ -168,6 +168,10 @@ public class ProcessorsReport
             line.add(data["Fields.362"].ToString());
             line.add(data["Fields.317"].ToString());
 
+            if (Program.debug)
+            {
+                line.add(data.Guid);
+            }
 
            
             report.Add(line);

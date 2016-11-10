@@ -254,3 +254,4 @@ paket-files/
 #others
 App.config
 /bin/
+*.csproj
