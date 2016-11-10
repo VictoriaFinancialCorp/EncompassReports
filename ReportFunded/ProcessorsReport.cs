@@ -27,20 +27,18 @@ public class ProcessorsReport
 
         DateTime timestamp = DateTime.Now;
 
-        String text = "<html><head><style>";
-        text += "table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}";
-        text += "table{border:2px solid grey}";
-        text += ".small{font-size:.7em;}";
-        text += "</style></head><body>";
+        String html = HtmlReport.getHeader();
 
-        text += startApplication();
 
-        text += "<div class='small'>*Data Sources from Encompass. If report is incorrect, please update information in Encompass.* </div>";
-        text += "<div class='small'>Report completed in: " + DateTime.Now.Subtract(timestamp).ToString(@"ss\.fff") + " seconds</div> </body></html>";
+        html += "<body>";
+
+        html += startApplication();
+
+        html += HtmlReport.getFooter(timestamp);
 
         Console.Out.WriteLine("Report ready!");
         session.End();
-        return text;
+        return html;
     }
     private String startApplication()
     {
@@ -156,6 +154,11 @@ public class ProcessorsReport
             Row line = new Row();
             line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
             line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
+
+            if (Math.Ceiling(DateTime.Now.Subtract(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"])).TotalDays) > 60)
+            {
+                line.setWarn(true);
+            }
             line.add(Utility.toShortDate(data["Fields.Log.MS.Date.Submittal"]));
             line.add(data["Fields.364"].ToString());
             line.add(data["Fields.4002"].ToString().ToUpper()+", "+ data["Fields.4000"].ToString().ToUpper());
@@ -195,7 +198,14 @@ public class ProcessorsReport
         foreach (Row row in report)
         {
             //row.toString();
-            text += "<tr>";
+            if (row.isWarning())
+            {
+                text += "<tr class='yellow'>";
+            }else
+            {
+                text += "<tr>";
+            }
+           
             foreach (String col in row.getRow())
             {
                 if (row.isHeader())

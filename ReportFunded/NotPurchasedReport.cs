@@ -26,18 +26,16 @@ public class NotPurchasedReport
 
         DateTime timestamp = DateTime.Now;
 
-        String text = "<html><head>";
-        text += "<style>table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}.small{font-size:.7em;}</style>";
-        text += "</head><body>";
+        String html = HtmlReport.getHeader();
+        html += "<body>";
 
-        text += startApplication();
+        html += startApplication();
 
-        text += "<div class='small'>*Data Sources from Encompass. If report is incorrect, please update information in Encompass.* </div>";
-        text += "<div class='small'>Report completed in: " + DateTime.Now.Subtract(timestamp).ToString(@"ss\.fff") + " seconds</div> </body></html>";
+        html += HtmlReport.getFooter();
 
         Console.Out.WriteLine("Report ready!");
         session.End();
-        return text;
+        return html;
     }
     private String startApplication()
     {

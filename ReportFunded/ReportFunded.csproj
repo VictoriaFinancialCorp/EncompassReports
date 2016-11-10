@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HtmlReoprt.cs" />
     <Compile Include="NotCTCReport.cs" />
     <Compile Include="ProcessorsReport.cs" />
     <Compile Include="Program.cs" />
