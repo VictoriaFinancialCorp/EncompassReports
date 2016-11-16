@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HtmlReoprt.cs" />
+    <Compile Include="Locks4CTCNotFundedReport.cs" />
     <Compile Include="NotCTCReport.cs" />
     <Compile Include="ProcessorsReport.cs" />
     <Compile Include="Program.cs" />

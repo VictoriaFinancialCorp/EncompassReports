@@ -55,4 +55,19 @@ public static class Utility
             return temp.ToShortDateString();
         }
     }
+    public static String toPercent(Object percent)
+    {
+        Double temp = Convert.ToDouble(percent);
+
+        //String temp = Convert.ToDouble(percent).ToString("F3");
+        
+        if (temp<.000001)
+        {
+            return " ";
+        }
+        else
+        {
+            return temp.ToString("F3");
+        }
+    }
 }

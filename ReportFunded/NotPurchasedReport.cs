@@ -31,7 +31,7 @@ public class NotPurchasedReport
 
         html += startApplication();
 
-        html += HtmlReport.getFooter();
+        html += HtmlReport.getFooter(timestamp);
 
         Console.Out.WriteLine("Report ready!");
         session.End();

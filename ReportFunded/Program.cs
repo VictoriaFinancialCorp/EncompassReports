@@ -19,7 +19,8 @@ namespace ReportFunded
                 "Funded Report",
                 "Not Purchased Report",
                 "Not CTC Report < 60 days",
-                "Processors Report"
+                "Processors Report",
+                "Locked for Files CTC, Not Funded Report"
             };
 
             parseArgs(args);
@@ -51,22 +52,27 @@ namespace ReportFunded
                 case 0:
                     FundedReport report1 = new FundedReport();
                     text = report1.run();
-                    outputReport(reports[0], text);
+                    outputReport(reports[report], text);
                     break;
                 case 1:
                     NotPurchasedReport report2 = new NotPurchasedReport();
                     text = report2.run();
-                    outputReport(reports[1], text);
+                    outputReport(reports[report], text);
                     break;
                 case 2:
                     NotCTCReport report3 = new NotCTCReport();
                     text = report3.run();
-                    outputReport(reports[2], text);
+                    outputReport(reports[report], text);
                     break;
                 case 3:
                     ProcessorsReport report4 = new ProcessorsReport();
                     text = report4.run();
-                    outputReport(reports[3], text);
+                    outputReport(reports[report], text);
+                    break;
+                case 4:
+                    Locks4CTCNotFundedReport report5 = new Locks4CTCNotFundedReport();
+                    text = report5.run();
+                    outputReport(reports[report], text);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");
