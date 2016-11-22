@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FundedNotLockedReport.cs" />
     <Compile Include="HtmlReoprt.cs" />
     <Compile Include="Locks4CTCNotFundedReport.cs" />
     <Compile Include="NotCTCReport.cs" />

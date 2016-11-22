@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using EllieMae.Encompass.Client;
+﻿using EllieMae.Encompass.Client;
 using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
-
+using System;
+using System.Collections.Generic;
 
 namespace ReportFunded
 {
-    class Locks4CTCNotFundedReport
+    class FundedNotLockedReport
     {
         private Session session;
         private List<Row> report;
 
-        public Locks4CTCNotFundedReport()
+        public FundedNotLockedReport()
         {
             this.report = new List<Row>();
         }
@@ -53,7 +52,7 @@ namespace ReportFunded
             ctcNonEmpty.FieldName = "Fields.Log.MS.Date.Clear to Close";
             ctcNonEmpty.Value = DateFieldCriterion.NonEmptyDate;
             ctcNonEmpty.MatchType = OrdinalFieldMatchType.Equals;
-         
+
             //empty funding date
             DateFieldCriterion fundDateEmpty = new DateFieldCriterion();
             fundDateEmpty.FieldName = "Fields.Log.MS.Date.Funding";
@@ -76,7 +75,7 @@ namespace ReportFunded
             purchDateEmpty.Value = DateFieldCriterion.EmptyDate;
             purchDateEmpty.MatchType = OrdinalFieldMatchType.Equals;
 
-            QueryCriterion fullQuery = folderCri.And((ctcNonEmpty.And(fundDateEmpty)));
+            QueryCriterion fullQuery = folderCri.And((fundDateNotEmpty.And(invLockEmpty).And(purchDateEmpty)));
 
             StringList fields = new StringList();
             Row row = new Row();
@@ -107,9 +106,9 @@ namespace ReportFunded
             row.add("Milestone");
             fields.Add("Fields.Log.MS.CurrentMilestone");
 
-            row.add("Date Started");
-            fields.Add("Fields.Log.MS.Date.Started");
-            
+            row.add("Funded");
+            fields.Add("Fields.Log.MS.Date.Funding");
+
             row.add("Base YSP");
             fields.Add("Fields.2232");
 
@@ -123,7 +122,7 @@ namespace ReportFunded
             fields.Add("Fields.2276");
 
             row.add("Total Rebate");
-            
+
 
             row.add("Locked");
             fields.Add("Fields.2400");
@@ -142,7 +141,7 @@ namespace ReportFunded
             fields.Add("Fields.1811");
 
             row.add("Purpose");
-            fields.Add("Fields.19");            
+            fields.Add("Fields.19");
 
             row.add("Processor");
             fields.Add("Fields.362");
@@ -154,7 +153,7 @@ namespace ReportFunded
 
 
             SortCriterionList sortOrder = new SortCriterionList();
-            sortOrder.Add(new SortCriterion("Fields.Log.MS.CurrentMilestone", SortOrder.Descending));
+            sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Funding", SortOrder.Ascending));
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 
@@ -163,7 +162,15 @@ namespace ReportFunded
             int count = results.Count;
             Console.Out.WriteLine("Total Files" + ": " + count);
 
-            text += "Total Files CTC, Not Funded: <b>" + count + "</b><br/><br/>";
+
+            //end program if results empty
+            if (count == 0)
+            {
+                results.Close();
+                Environment.Exit(0);
+            }
+
+            text += "Total Files Funded w/o Investor Lock: <b>" + count + "</b><br/><br/>";
 
 
             //iterate through query and format
@@ -182,14 +189,14 @@ namespace ReportFunded
 
 
                 line.add(data["Fields.Log.MS.CurrentMilestone"].ToString());
-                
-                line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToShortDateString());
+
+                line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToShortDateString());
 
                 line.add(Utility.toPercent(data["Fields.2232"]));
                 line.add(Utility.toPercent(data["Fields.2273"]));
                 line.add(Utility.toPercent(data["Fields.2274"]));
                 line.add(Utility.toPercent(data["Fields.2276"]));
-              
+
                 line.add((Convert.ToDouble(data["Fields.2274"]) + Convert.ToDouble(data["Fields.2276"])).ToString("F3"));
 
 
@@ -198,27 +205,30 @@ namespace ReportFunded
                 line.add(Utility.toShortDate(data["Fields.2220"]));
                 line.add(Utility.toShortDate(data["Fields.2222"]));
 
-             
+
                 //occupancy
                 line.add(data["Fields.1811"].ToString().Substring(0, 1));
 
                 String purpose = data["Fields.19"].ToString();
-                if(purpose.Equals("Cash-Out Refinance"))
+                if (purpose.Equals("Cash-Out Refinance"))
                 {
                     line.add("C/O Refi");
-                }else if(purpose.Equals("NoCash-Out Refinance"))
+                }
+                else if (purpose.Equals("NoCash-Out Refinance"))
                 {
                     line.add("No C/O Refi");
-                }else if (purpose.Equals("Purchase"))
+                }
+                else if (purpose.Equals("Purchase"))
                 {
                     line.add("Purch");
-                }else
+                }
+                else
                 {
                     line.add(purpose);
                 }
-               
+
                 line.add(data["Fields.362"].ToString());
-                line.add(data["Fields.317"].ToString());          
+                line.add(data["Fields.317"].ToString());
 
 
 
@@ -236,7 +246,7 @@ namespace ReportFunded
 
         private String formatReport(List<Row> report)
         {
-            String text = "<table border='1'>";
+            String text = "<table border='1' class='yellow'>";
             foreach (Row row in report)
             {
                 row.toString();
@@ -265,6 +275,5 @@ namespace ReportFunded
             text += "</table>";
             return text;
         }
-
     }
-}
+    }

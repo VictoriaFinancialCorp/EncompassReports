@@ -20,7 +20,8 @@ namespace ReportFunded
                 "Not Purchased Report",
                 "Not CTC Report < 60 days",
                 "Processors Report",
-                "Locked for Files CTC, Not Funded Report"
+                "Locked for Files CTC, Not Funded Report",
+                "Funded w/o Investor Lock Report"
             };
 
             parseArgs(args);
@@ -72,6 +73,11 @@ namespace ReportFunded
                 case 4:
                     Locks4CTCNotFundedReport report5 = new Locks4CTCNotFundedReport();
                     text = report5.run();
+                    outputReport(reports[report], text);
+                    break;
+                case 5:
+                    FundedNotLockedReport report6 = new FundedNotLockedReport();
+                    text = report6.run();
                     outputReport(reports[report], text);
                     break;
                 default:
