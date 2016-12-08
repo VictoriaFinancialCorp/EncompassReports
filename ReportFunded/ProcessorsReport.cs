@@ -6,6 +6,7 @@ using EllieMae.Encompass.Reporting;
 using ReportFunded;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 public class ProcessorsReport
 {
@@ -191,10 +192,41 @@ public class ProcessorsReport
             line.add(data["Fields.317"].ToString());
             //milestone comments
             string nextMilestone = data["Fields.Log.MS.Stage"].ToString();
-            line.add(data["Fields.Log.MS.Comments."+ nextMilestone].ToString());
-           // Console.WriteLine("Fields.Log.MS.Comments."+ nextMilestone);
-           // Console.WriteLine(data["Fields.Log.MS.Comments." + currMilestone].ToString());
-        
+            
+            //string notes = "";
+            StringList log = new StringList();
+            log.Add( data["Fields.Log.MS.Comments.Started"].ToString());
+            log.Add( data["Fields.Log.MS.Comments.Processing"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Submittal"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Cond Approval"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Resubmittal"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Clear to Close"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Ready for Docs"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Docs Drawn"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Docs Signing"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Funding"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Purchased"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Shipping"].ToString());
+            log.Add(data["Fields.Log.MS.Comments.Completion"].ToString());
+            String notes ="";
+            foreach (string l in log)
+            {
+                if(l.Trim().Length != 0)
+                {
+                    using (StringReader reader = new StringReader(l.ToString()))
+                    {
+                        string li ="";
+                        while ((li = reader.ReadLine()) != null)
+                        {
+                            notes += li.Trim() + "<br/>";
+                        }
+                        
+                    }
+
+                }
+               
+            }
+            line.add(notes);
 
             if (Program.debug)
             {
