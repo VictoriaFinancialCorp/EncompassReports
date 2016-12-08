@@ -140,14 +140,6 @@ public class NotPurchasedReport
                 {
                     text += "<td>" + col + "</td>";
                 }
-                if (Program.debug)
-                {
-                    Console.Out.Write(col + "\t");
-                }
-            }
-            if (Program.debug)
-            {
-                Console.Out.WriteLine("");
             }
             text += "</tr>";
         }

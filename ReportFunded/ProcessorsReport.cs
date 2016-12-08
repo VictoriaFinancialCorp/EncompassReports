@@ -106,7 +106,26 @@ public class ProcessorsReport
 
         header.add("Loan Officer");
         fields.Add("Fields.317");
-      
+
+        header.add("Notes");
+        fields.Add("Fields.Log.MS.Stage");
+        fields.Add("Fields.Log.MS.Comments.Approval");
+        fields.Add("Fields.Log.MS.Comments.Clear to Close");
+        fields.Add("Fields.Log.MS.Comments.Completion");
+        fields.Add("Fields.Log.MS.Comments.Cond Approval");
+        fields.Add("Fields.Log.MS.Comments.Docs Drawn");
+        fields.Add("Fields.Log.MS.Comments.Docs Signing");
+        fields.Add("Fields.Log.MS.Comments.Funding");
+        fields.Add("Fields.Log.MS.Comments.Processing");
+        fields.Add("Fields.Log.MS.Comments.Purchased");
+        fields.Add("Fields.Log.MS.Comments.Ready for Docs");
+        fields.Add("Fields.Log.MS.Comments.Resubmittal");
+        fields.Add("Fields.Log.MS.Comments.Sent to Title");
+        fields.Add("Fields.Log.MS.Comments.Shipping");
+        fields.Add("Fields.Log.MS.Comments.Started");
+        fields.Add("Fields.Log.MS.Comments.Submittal");
+
+
         report.Add(header);
 
 
@@ -170,6 +189,12 @@ public class ProcessorsReport
             line.add(Utility.toShortDate(data["Fields.761"]));
             line.add(data["Fields.362"].ToString());
             line.add(data["Fields.317"].ToString());
+            //milestone comments
+            string nextMilestone = data["Fields.Log.MS.Stage"].ToString();
+            line.add(data["Fields.Log.MS.Comments."+ nextMilestone].ToString());
+           // Console.WriteLine("Fields.Log.MS.Comments."+ nextMilestone);
+           // Console.WriteLine(data["Fields.Log.MS.Comments." + currMilestone].ToString());
+        
 
             if (Program.debug)
             {
@@ -216,14 +241,6 @@ public class ProcessorsReport
                 {
                     text += "<td>" + col + "</td>";
                 }
-                if (Program.debug)
-                {
-                    Console.Out.Write(col + "\t");
-                }
-            }
-            if (Program.debug)
-            {
-                Console.Out.WriteLine("");
             }
             text += "</tr>";
         }
