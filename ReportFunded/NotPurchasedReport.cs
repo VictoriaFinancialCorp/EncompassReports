@@ -130,15 +130,15 @@ public class NotPurchasedReport
         {
             row.toString();
             text += "<tr>";
-            foreach(String col in row.getRow())
+            foreach(Col col in row.getRow())
             {
                 if (row.isHeader())
                 {
-                    text += "<th>" + col + "</th>";
+                    text += "<th>" + col.toString() + "</th>";
                 }
                 else
                 {
-                    text += "<td>" + col + "</td>";
+                    text += "<td>" + col.toString() + "</td>";
                 }
             }
             text += "</tr>";

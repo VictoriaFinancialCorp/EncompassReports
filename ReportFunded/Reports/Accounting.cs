@@ -190,13 +190,18 @@ namespace ReportFunded.Reports
                 line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToShortDateString());
                 line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToShortDateString());
 
-             //   line.add(Utility.toPercent(data["Fields.2232"]));
-              //  line.add(Utility.toPercent(data["Fields.2273"]));
-              //  line.add(Utility.toPercent(data["Fields.2274"]));
-              //  line.add(Utility.toPercent(data["Fields.2276"]));
-
-                line.add((Convert.ToDouble(data["Fields.2274"]) + Convert.ToDouble(data["Fields.2276"])).ToString("F3"));
-                
+                //   line.add(Utility.toPercent(data["Fields.2232"]));
+                //  line.add(Utility.toPercent(data["Fields.2273"]));
+                //  line.add(Utility.toPercent(data["Fields.2274"]));
+                //  line.add(Utility.toPercent(data["Fields.2276"]));
+                Double rebate = (Convert.ToDouble(data["Fields.2274"]) + Convert.ToDouble(data["Fields.2276"]));
+                if (rebate <= 0.0001)
+                {
+                    line.add(rebate.ToString("F3"), true);
+                }
+                else {
+                    line.add(rebate.ToString("F3"));
+                }
                
 
                 line.add(data["Fields.362"].ToString());
@@ -231,15 +236,22 @@ namespace ReportFunded.Reports
                 {
                     text += "<tr>";
                 }
-                foreach (String col in row.getRow())
+                foreach (Col col in row.getRow())
                 {
                     if (row.isHeader())
                     {
-                        text += "<th>" + col + "</th>";
+                        text += "<th>" + col.toString() + "</th>";
                     }
                     else
                     {
-                        text += "<td>" + col + "</td>";
+                        if (col.isWarning())
+                        {
+                            text += "<td class='yellow'>" + col.toString() + "</td>";
+                        }
+                        else
+                        {
+                            text += "<td>" + col.toString() + "</td>";
+                        }
                     }
                 }
                 text += "</tr>";

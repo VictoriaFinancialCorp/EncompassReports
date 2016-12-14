@@ -122,7 +122,7 @@ public class FundedReport
         {
             row.toString();
             text += "<tr>";
-            foreach (String col in row.getRow())
+            foreach (Col col in row.getRow())
             {
                 if (row.isHeader())
                 {
