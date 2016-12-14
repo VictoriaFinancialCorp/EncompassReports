@@ -140,8 +140,18 @@ namespace ReportFunded.Reports
 
             row.add("Total Rebate");
 
+            row.add("Rebate");
 
-            
+            row.add("Warehouse Int");
+            fields.Add("Fields.2834");
+
+            row.add("Warehouse Fees");
+            fields.Add("Fields.2373");
+            fields.Add("Fields.2375");
+            fields.Add("Fields.2377");
+            fields.Add("Fields.2379");
+            fields.Add("Fields.2381");
+            fields.Add("Fields.2383");
 
             row.add("Processor");
             fields.Add("Fields.362");
@@ -169,6 +179,8 @@ namespace ReportFunded.Reports
                 results.Close();
                 Environment.Exit(0);
             }
+            //local variables
+            double rebateTotal = 0;
 
             text += "Total Files Purchased this Month-to-Date: <b>" + count + "</b><br/><br/>";
 
@@ -185,7 +197,8 @@ namespace ReportFunded.Reports
                 line.add((data["Fields.4002"].ToString() + " " + data["Fields.4000"].ToString()).ToUpper());
                 line.add(data["Fields.11"].ToString().ToUpper());
                 line.add(Convert.ToDouble(data["Fields.3"]).ToString("F3"));
-                line.add(Convert.ToInt32(data["Fields.1109"]).ToString("C"));
+                int loanAmt = Convert.ToInt32(data["Fields.1109"]);
+                line.add(loanAmt.ToString("C"));
 
                 line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToShortDateString());
                 line.add(Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToShortDateString());
@@ -197,12 +210,28 @@ namespace ReportFunded.Reports
                 Double rebate = (Convert.ToDouble(data["Fields.2274"]) + Convert.ToDouble(data["Fields.2276"]));
                 if (rebate <= 0.0001)
                 {
-                    line.add(rebate.ToString("F3"), true);
+                    line.add(rebate.ToString("F3"), 1);
+                    line.add(" ");
                 }
                 else {
                     line.add(rebate.ToString("F3"));
+                    Double rebateAmt = (rebate - 100) * loanAmt * .01;
+                    if(rebateAmt <= 0)
+                    {
+                        line.add(rebateAmt.ToString("C"), 2);
+                    }else
+                    {
+                        line.add(rebateAmt.ToString("C"));
+                    }
+                    rebateTotal += rebateAmt;
+                    
                 }
-               
+
+                line.add(data["Fields.2834"].ToString());
+                double warehouseFees = Convert.ToDouble(data["Fields.2373"]) + Convert.ToDouble(data["Fields.2375"])
+                    + Convert.ToDouble(data["Fields.2377"]) + Convert.ToDouble(data["Fields.2379"])
+                    + Convert.ToDouble(data["Fields.2381"]) + Convert.ToDouble(data["Fields.2383"]);
+                line.add(warehouseFees.ToString("C"));
 
                 line.add(data["Fields.362"].ToString());
                 line.add(data["Fields.317"].ToString());
@@ -212,6 +241,26 @@ namespace ReportFunded.Reports
                 report.Add(line);
                 Console.Out.Write("."); //status bar
             }
+
+            //process last row
+            Row totals = new Row();
+            totals.setHeader(true);
+            totals.add("");
+            totals.add("");
+            totals.add("");
+            totals.add("");
+            totals.add("");
+            totals.add("");
+            totals.add("");
+            totals.add("Count");
+            totals.add(count.ToString());
+            totals.add("Total");
+            totals.add(rebateTotal.ToString("C"));
+            totals.add("");
+            totals.add("");
+            
+            report.Add(totals);
+
             Console.Out.WriteLine("");
             results.Close();
 
@@ -247,6 +296,9 @@ namespace ReportFunded.Reports
                         if (col.isWarning())
                         {
                             text += "<td class='yellow'>" + col.toString() + "</td>";
+                        }else if (col.isAlert())
+                        {
+                            text += "<td class='alert'>" + col.toString() + "</td>";
                         }
                         else
                         {

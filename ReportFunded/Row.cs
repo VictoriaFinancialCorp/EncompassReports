@@ -22,12 +22,21 @@ namespace ReportFunded
         {
             this.cols.Add(new ReportFunded.Col(col));
         }
-        public void add(String col, Boolean warn)
+        public void add(String col, int level)
         {
             Col c = new ReportFunded.Col(col);
-            if (warn)
+            switch (level)
             {
-                c.setWarn(warn);
+                case 0:
+                    break;
+                case 1:
+                    c.setWarn(true);
+                    break;
+                case 2:
+                    c.setAlert(true);
+                    break;
+                default:
+                    break;
             }
             this.cols.Add(c);
         }
@@ -60,9 +69,12 @@ namespace ReportFunded
     };
     public class Col{
         Boolean warning;
+        Boolean alert;
         String text;
+
         public Col(String text){
             this.warning = false;
+            this.alert = false;
             this.text = text;
         }
         public void add(String text)
@@ -84,6 +96,14 @@ namespace ReportFunded
         public Boolean isWarning()
         {
             return this.warning;
+        }
+        public void setAlert(Boolean alert)
+        {
+            this.alert = alert;
+        }
+        public Boolean isAlert()
+        {
+            return this.alert;
         }
 
     }
