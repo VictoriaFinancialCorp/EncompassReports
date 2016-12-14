@@ -12,9 +12,11 @@ namespace ReportFunded
         {
             String header = "<html><head><style>";
             List<String> css = new List<String> {
-               "table,th,td{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}",
-               "table{border:2px solid grey}",
+               "table,td{text-align:left;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}",
+               "th{text-align:center;border:1px solid grey;border-collapse:collapse;padding:.5em;font-size:.9em;}",
+               "table{border:2px solid grey;}",
                ".yellow{background:#FFFCA6;}",
+               ".alert{color:red;font-weight:bold;}",
                ".small{font-size:.7em;}"
             };
             foreach(String s in css){

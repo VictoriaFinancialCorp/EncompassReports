@@ -1,4 +1,5 @@
 ﻿using EllieMae.Encompass.Client;
+using ReportFunded.Reports;
 using System;
 using System.Collections.Generic;
 
@@ -21,7 +22,8 @@ namespace ReportFunded
                 "Not CTC Report < 60 days",
                 "Processors Report",
                 "Locked for Files CTC, Not Funded Report",
-                "Funded w/o Investor Lock Report"
+                "Funded w/o Investor Lock Report",
+                "Accounting Report for Current Month"
             };
 
             parseArgs(args);
@@ -78,6 +80,11 @@ namespace ReportFunded
                 case 5:
                     FundedNotLockedReport report6 = new FundedNotLockedReport();
                     text = report6.run();
+                    outputReport(reports[report], text);
+                    break;
+                case 6:
+                    Accounting report7 = new Accounting();
+                    text = report7.run();
                     outputReport(reports[report], text);
                     break;
                 default:

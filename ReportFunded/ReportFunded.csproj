@@ -63,6 +63,7 @@
     <Compile Include="NotCTCReport.cs" />
     <Compile Include="ProcessorsReport.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Reports\Accounting.cs" />
     <Compile Include="Row.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="FundedReport.cs" />

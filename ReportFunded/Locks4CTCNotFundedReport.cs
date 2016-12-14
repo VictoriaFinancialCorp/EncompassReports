@@ -155,6 +155,7 @@ namespace ReportFunded
 
             SortCriterionList sortOrder = new SortCriterionList();
             sortOrder.Add(new SortCriterion("Fields.Log.MS.CurrentMilestone", SortOrder.Descending));
+            sortOrder.Add(new SortCriterion("Fields.2149", SortOrder.Ascending));
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 

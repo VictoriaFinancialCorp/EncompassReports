@@ -108,7 +108,7 @@ public class ProcessorsReport
         header.add("Loan Officer");
         fields.Add("Fields.317");
 
-        header.add("Notes");
+        header.add("Milestone Notes");
         fields.Add("Fields.Log.MS.Stage");
         fields.Add("Fields.Log.MS.Comments.Approval");
         fields.Add("Fields.Log.MS.Comments.Clear to Close");
