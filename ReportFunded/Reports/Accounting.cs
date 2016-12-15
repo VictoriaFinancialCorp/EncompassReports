@@ -142,10 +142,10 @@ namespace ReportFunded.Reports
 
             row.add("Rebate");
 
-            row.add("Warehouse Interest");
+            row.add("Investor Interest");
             fields.Add("Fields.2834");
 
-            row.add("Warehouse Fees");
+            row.add("Investor Fees");
             fields.Add("Fields.2373");
             fields.Add("Fields.2375");
             fields.Add("Fields.2377");
@@ -227,9 +227,14 @@ namespace ReportFunded.Reports
             double appraisalTotal = 0;
             double creditTotal = 0;
             double recordingTotal = 0;
+            double investorFeeTotal = 0;
+            double investorIntTotal = 0;
 
             text += "Total Files Purchased this Month-to-Date: <b>" + count + "</b><br/><br/>";
-
+            text += "<div class='small'><ul>Fees and Income not included" +
+                "<li>warehouse fees and interest</li>" +
+                "<li>payoff fees refunded to borrower</li>" +
+                "</ul> </div>";
 
             //iterate through query and format
             foreach (LoanReportData data in results)
@@ -272,16 +277,16 @@ namespace ReportFunded.Reports
                     rebateTotal += rebateAmt;
                     
                 }
-                double warehouseInt = Convert.ToDouble(data["Fields.2834"]);
-                line.add((warehouseInt *-1).ToString("C"));
-                warehouseIntTotal += warehouseInt;
+                double investorInt = Convert.ToDouble(data["Fields.2834"]);
+                line.add((investorInt * -1).ToString("C"));
+                investorIntTotal += investorInt;
 
 
-                double warehouseFees = Convert.ToDouble(data["Fields.2373"]) + Convert.ToDouble(data["Fields.2375"])
+                double investorFees = Convert.ToDouble(data["Fields.2373"]) + Convert.ToDouble(data["Fields.2375"])
                     + Convert.ToDouble(data["Fields.2377"]) + Convert.ToDouble(data["Fields.2379"])
                     + Convert.ToDouble(data["Fields.2381"]) + Convert.ToDouble(data["Fields.2383"]);
-                line.add((warehouseFees*-1).ToString("C"));
-                warehouseFeeTotal += warehouseFees;
+                line.add((investorFees * -1).ToString("C"));
+                investorFeeTotal += investorFees;
 
                 double appraisalFee = (Convert.ToDouble(data["Fields.641"]) );
                 line.add((-1*appraisalFee).ToString("C")); //appraisal fee
@@ -292,15 +297,14 @@ namespace ReportFunded.Reports
                 creditTotal += creditFee;
 
                 double interest = Convert.ToDouble(data["Fields.334"]);
-                line.add((interest * -1).ToString("C")); //interest
+                line.add((interest).ToString("C")); //interest
                 interestTotal += interest;
 
                 
                 String purpose = data["Fields.19"].ToString();
                 if (purpose.Contains("Refi"))
                 {
-                    double escrowFees = Convert.ToDouble(data["Fields.NEWHUD.X607"]) +
-                        Convert.ToDouble(data["Fields.NEWHUD.X607"]) + Convert.ToDouble(data["Fields.NEWHUD2.X11"]) +
+                    double escrowFees = Convert.ToDouble(data["Fields.NEWHUD2.X11"]) +
                         Convert.ToDouble(data["Fields.NEWHUD.X808"]) + Convert.ToDouble(data["Fields.NEWHUD2.X14"]) +
                         Convert.ToDouble(data["Fields.NEWHUD.X810"]) + Convert.ToDouble(data["Fields.NEWHUD.X812"]) +
                         Convert.ToDouble(data["Fields.NEWHUD.X814"]) + Convert.ToDouble(data["Fields.NEWHUD.X816"]) +
@@ -355,14 +359,19 @@ namespace ReportFunded.Reports
             totals.add(count.ToString());
             totals.add("Total");
             totals.add(rebateTotal.ToString("C"));
-            totals.add((-1*warehouseIntTotal).ToString("C"));
-            totals.add((-1 * warehouseFeeTotal).ToString("C"));
+            totals.add((-1 * investorIntTotal).ToString("C"));
+            totals.add((-1 * investorFeeTotal).ToString("C"));
             totals.add((-1 * appraisalTotal).ToString("C"));
             totals.add((-1 * creditTotal).ToString("C"));
             totals.add((-1 * interestTotal).ToString("C"));
             totals.add(escrowTotal.ToString("C"));
             totals.add((-1 * titleTotal).ToString("C"));
             totals.add((-1 * recordingTotal).ToString("C"));
+            totals.add("Grand Total");
+            double sum = rebateTotal - investorIntTotal - investorFeeTotal
+                - appraisalTotal - creditTotal + interestTotal + escrowTotal
+                - titleTotal - recordingTotal;
+            totals.add(sum.ToString("C"));
 
             report.Add(totals);
 
