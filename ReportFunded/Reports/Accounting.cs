@@ -142,7 +142,7 @@ namespace ReportFunded.Reports
 
             row.add("Rebate");
 
-            row.add("Warehouse Int");
+            row.add("Warehouse Interest");
             fields.Add("Fields.2834");
 
             row.add("Warehouse Fees");
@@ -153,11 +153,49 @@ namespace ReportFunded.Reports
             fields.Add("Fields.2381");
             fields.Add("Fields.2383");
 
+            row.add("Appraisal");
+            fields.Add("Fields.641");
+
+            row.add("Credit Fee");
+            fields.Add("Fields.640");
+
+            row.add("Interest");
+            fields.Add("Fields.334");
+
+            row.add("Escrow Fees");
+            fields.Add("Fields.NEWHUD2.X11");
+            fields.Add("Fields.NEWHUD2.X14");
+            fields.Add("Fields.NEWHUD.X808");
+            fields.Add("Fields.NEWHUD.X810");
+            fields.Add("Fields.NEWHUD.X812");
+            fields.Add("Fields.NEWHUD.X814");
+            fields.Add("Fields.NEWHUD.X816");
+            fields.Add("Fields.NEWHUD.X818");
+            fields.Add("Fields.NEWHUD.X639");
+
+            row.add("Title Fees");
+            fields.Add("Fields.NEWHUD.X572");
+            fields.Add("Fields.NEWHUD.X639");
+            fields.Add("Fields.NEWHUD.X215");
+            fields.Add("Fields.NEWHUD.X216");
+            fields.Add("Fields.1763");
+            fields.Add("Fields.1768");
+            fields.Add("Fields.1773");
+            fields.Add("Fields.1778");
+            fields.Add("Fields.NEWHUD.X1604");
+            fields.Add("Fields.NEWHUD.X1612");
+
+            row.add("Recording Fee");
+            fields.Add("Fields.NEWHUD.X607");
+
             row.add("Processor");
             fields.Add("Fields.362");
 
             row.add("Loan Officer");
             fields.Add("Fields.317");
+
+            //loan purpose
+            fields.Add("Fields.19");
 
             report.Add(row);
 
@@ -181,6 +219,14 @@ namespace ReportFunded.Reports
             }
             //local variables
             double rebateTotal = 0;
+            double escrowTotal = 0;
+            double titleTotal = 0;
+            double interestTotal = 0;
+            double warehouseFeeTotal = 0;
+            double warehouseIntTotal = 0;
+            double appraisalTotal = 0;
+            double creditTotal = 0;
+            double recordingTotal = 0;
 
             text += "Total Files Purchased this Month-to-Date: <b>" + count + "</b><br/><br/>";
 
@@ -226,12 +272,65 @@ namespace ReportFunded.Reports
                     rebateTotal += rebateAmt;
                     
                 }
+                double warehouseInt = Convert.ToDouble(data["Fields.2834"]);
+                line.add((warehouseInt *-1).ToString("C"));
+                warehouseIntTotal += warehouseInt;
 
-                line.add(data["Fields.2834"].ToString());
+
                 double warehouseFees = Convert.ToDouble(data["Fields.2373"]) + Convert.ToDouble(data["Fields.2375"])
                     + Convert.ToDouble(data["Fields.2377"]) + Convert.ToDouble(data["Fields.2379"])
                     + Convert.ToDouble(data["Fields.2381"]) + Convert.ToDouble(data["Fields.2383"]);
-                line.add(warehouseFees.ToString("C"));
+                line.add((warehouseFees*-1).ToString("C"));
+                warehouseFeeTotal += warehouseFees;
+
+                double appraisalFee = (Convert.ToDouble(data["Fields.641"]) );
+                line.add((-1*appraisalFee).ToString("C")); //appraisal fee
+                appraisalTotal += appraisalFee;
+
+                double creditFee = (Convert.ToDouble(data["Fields.640"]));
+                line.add((creditFee * -1).ToString("C")); //Credit fee
+                creditTotal += creditFee;
+
+                double interest = Convert.ToDouble(data["Fields.334"]);
+                line.add((interest * -1).ToString("C")); //interest
+                interestTotal += interest;
+
+                
+                String purpose = data["Fields.19"].ToString();
+                if (purpose.Contains("Refi"))
+                {
+                    double escrowFees = Convert.ToDouble(data["Fields.NEWHUD.X607"]) +
+                        Convert.ToDouble(data["Fields.NEWHUD.X607"]) + Convert.ToDouble(data["Fields.NEWHUD2.X11"]) +
+                        Convert.ToDouble(data["Fields.NEWHUD.X808"]) + Convert.ToDouble(data["Fields.NEWHUD2.X14"]) +
+                        Convert.ToDouble(data["Fields.NEWHUD.X810"]) + Convert.ToDouble(data["Fields.NEWHUD.X812"]) +
+                        Convert.ToDouble(data["Fields.NEWHUD.X814"]) + Convert.ToDouble(data["Fields.NEWHUD.X816"]) +
+                        Convert.ToDouble(data["Fields.NEWHUD.X818"])  ;
+                    line.add(escrowFees.ToString("C"));
+                    escrowTotal += escrowFees;
+
+                    double titleFees =
+                        Convert.ToDouble(data["Fields.NEWHUD.X215"]) + Convert.ToDouble(data["Fields.NEWHUD.X216"])  +
+                    Convert.ToDouble(data["Fields.1763"]) + Convert.ToDouble(data["Fields.1768"]) +
+                    Convert.ToDouble(data["Fields.NEWHUD.X639"]) +
+                    Convert.ToDouble(data["Fields.1773"]) + Convert.ToDouble(data["Fields.1778"]) +
+                    Convert.ToDouble(data["Fields.NEWHUD.X1604"]) + Convert.ToDouble(data["Fields.NEWHUD.X1612"]);
+                    titleTotal += titleFees;
+
+                    //Convert.ToDouble(data["Fields.NEWHUD.X572"]) owner's title
+                    line.add((-1*titleFees).ToString("C"));
+
+                    double recordingFee = Convert.ToDouble(data["Fields.NEWHUD.X607"]);
+                    line.add((recordingFee*-1).ToString("C"));
+                    recordingTotal += recordingFee;
+                }
+                else
+                {
+                    line.add("Purchase");
+                    line.add("Purchase");
+                    line.add("Purchase");
+                }
+
+
 
                 line.add(data["Fields.362"].ToString());
                 line.add(data["Fields.317"].ToString());
@@ -256,9 +355,15 @@ namespace ReportFunded.Reports
             totals.add(count.ToString());
             totals.add("Total");
             totals.add(rebateTotal.ToString("C"));
-            totals.add("");
-            totals.add("");
-            
+            totals.add((-1*warehouseIntTotal).ToString("C"));
+            totals.add((-1 * warehouseFeeTotal).ToString("C"));
+            totals.add((-1 * appraisalTotal).ToString("C"));
+            totals.add((-1 * creditTotal).ToString("C"));
+            totals.add((-1 * interestTotal).ToString("C"));
+            totals.add(escrowTotal.ToString("C"));
+            totals.add((-1 * titleTotal).ToString("C"));
+            totals.add((-1 * recordingTotal).ToString("C"));
+
             report.Add(totals);
 
             Console.Out.WriteLine("");
