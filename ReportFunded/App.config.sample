@@ -4,10 +4,13 @@
         <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
     </startup>
   <appSettings>
-    <add key="Eserver_address" value="EncompassServerAddress" />
-    <add key="Eserver_login" value="EncompassLogin"/>
-    <add key="Eserver_pw" value="EncompassPassword"/>
-	<add key="from" value="reports@localhost"/>
-    <add key="smtp_server" value="localhost"/>
+    <add key ="Eserver_address" value="EncompassServerAddress" />
+    <add key ="Eserver_login" value="EncompassLogin"/>
+    <add key ="Eserver_pw" value="EncompassPassword"/>
+	  <add key ="from" value="reports@localhost"/>
+    <add key ="smtp_server" value="localhost"/>
+    <add key ="db_address" value="localhost"/>
+    <add key ="db_login" value ="root"/>
+    <add key ="db_pw" value =""/>
   </appSettings>
 </configuration>

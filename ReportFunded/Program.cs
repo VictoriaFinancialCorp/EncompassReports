@@ -23,7 +23,8 @@ namespace ReportFunded
                 "Processors Report",
                 "Locked for Files CTC, Not Funded Report",
                 "Funded w/o Investor Lock Report",
-                "Accounting Report for Current Month"
+                "Accounting Report for Current Month",
+                "db testing"
             };
 
             parseArgs(args);
@@ -86,6 +87,9 @@ namespace ReportFunded
                     Accounting report7 = new Accounting();
                     text = report7.run();
                     outputReport(reports[report], text);
+                    break;
+                case 7:
+                    db.db_connect db = new db.db_connect();
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");
