@@ -89,7 +89,10 @@ namespace ReportFunded
                     outputReport(reports[report], text);
                     break;
                 case 7:
-                    db.db_connect db = new db.db_connect();
+                    db.db_connect connection = new db.db_connect();
+                    connection.connect();
+                    connection.addLog("test", "everything working");
+                    connection.close();
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");
