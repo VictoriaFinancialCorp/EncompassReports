@@ -24,7 +24,8 @@ namespace ReportFunded
                 "Locked for Files CTC, Not Funded Report",
                 "Funded w/o Investor Lock Report",
                 "Accounting Report for Current Month",
-                "db testing"
+                "db testing",
+                "db update"
             };
 
             parseArgs(args);
@@ -91,8 +92,14 @@ namespace ReportFunded
                 case 7:
                     db.db_connect connection = new db.db_connect();
                     connection.connect();
+                    //connection.init();
+                   
                     connection.addLog("test", "everything working");
                     connection.close();
+                    break;
+                case 8:
+                    db.EncompassUpdate update = new db.EncompassUpdate();
+                    update.run();
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");

@@ -31,25 +31,51 @@ namespace ReportFunded.db
             }
 
         }
+        public MySqlConnection getConnection()
+        {
+            return this.conn;
+        }
+
+        public void dropTable(String tableName)
+        {
+            MySqlDataReader rdr = null;
+            string stm = "DROP TABLE IF EXISTS " + tableName;
+            MySqlCommand cmd = new MySqlCommand(stm, conn);
+            rdr = cmd.ExecuteReader();
+            rdr.Close();
+        
+        }
+        public void init( )
+        {
+            dropTable("logs");
+            MySqlDataReader rdr = null;
+            string stm = "CREATE TABLE logs(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, timestamp TIMESTAMP, event VARCHAR(20), message VARCHAR(100) );";
+            MySqlCommand cmd = new MySqlCommand(stm, conn);
+            rdr = cmd.ExecuteReader();
+            rdr.Close();
+        }
     
-        public void query(String query)
+        public void query(MySqlCommand cmd)
         {
 
             MySqlDataReader rdr = null;
-            string stm = "SELECT * FROM logs";
-            MySqlCommand cmd = new MySqlCommand(stm, conn);
+            //string stm = query;
+            //MySqlCommand cmd = new MySqlCommand();
+            cmd.Connection = conn;
+            //cmd.CommandText = query;
             rdr = cmd.ExecuteReader();
 
-            while (rdr.Read())
+            /*while (rdr.Read())
             {
                 Console.WriteLine( rdr.GetString(1));
-            }
+            }*/
+            rdr.Close();
         }
 
         public void addLog(String eventName, String message)
         {
             MySqlDataReader reader = null;
-            string query = "INSERT INTO logs(timestamp, event, message)"+
+            string query = "INSERT INTO log(createdAt, event_name, message)"+
                 "VALUES(now(),'"+eventName+"','"+message+"')";
             Console.Out.WriteLine("MySQL Query: " + query);
             MySqlCommand cmd = new MySqlCommand(query, conn);
@@ -58,8 +84,8 @@ namespace ReportFunded.db
             while (reader.Read())
             {
                 Console.WriteLine(reader.GetDateTime(0) +"/t" +reader.GetString(1) + "/t" +  reader.GetString(2));
-
             }
+            reader.Close();
         }
 
         public void close()
@@ -70,5 +96,9 @@ namespace ReportFunded.db
             }
         }
 
+        public static implicit operator MySqlConnection(db_connect v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

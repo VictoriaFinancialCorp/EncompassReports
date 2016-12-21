@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="db\db_connect.cs" />
+    <Compile Include="db\EncompassUpdate.cs" />
     <Compile Include="FundedNotLockedReport.cs" />
     <Compile Include="HtmlReoprt.cs" />
     <Compile Include="Locks4CTCNotFundedReport.cs" />
