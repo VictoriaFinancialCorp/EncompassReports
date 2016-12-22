@@ -49,6 +49,7 @@ namespace ReportFunded.db
             fields.Add("Fields.1109");
             fields.Add("Fields.362");
             fields.Add("Fields.317");
+            fields.Add("Fields.Log.MS.Date.Funding");
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
@@ -78,15 +79,16 @@ namespace ReportFunded.db
                 map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
                 map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
                 map.Add("loanNum", data["Fields.364"].ToString());
+                map.Add("fundedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd"));
               
                 data["Fields.362"].ToString();
                 data["Fields.317"].ToString();
                 
 
                 cmd.CommandText = string.Format(
-                    "INSERT INTO loan(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum) " + 
-                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7) " +
-                    "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt, b1_lname=@v4, b1_fname=@v5, loanAmt=@v6, loanNum=@v7"
+                    "INSERT INTO loan(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate) " + 
+                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7, @v8) " +
+                    "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt, b1_lname=@v4, b1_fname=@v5, loanAmt=@v6, loanNum=@v7, fundedDate=@v8"
                     );
 
                 cmd.Parameters.Clear();
@@ -99,6 +101,7 @@ namespace ReportFunded.db
                 cmd.Parameters.AddWithValue("@v5", map["b1_fname"]);
                 cmd.Parameters.AddWithValue("@v6", map["loanAmt"]);
                 cmd.Parameters.AddWithValue("@v7", map["loanNum"]);
+                cmd.Parameters.AddWithValue("@v8", map["fundedDate"]);
                 cmd.Prepare();
 
                 cmd.ExecuteNonQuery();
