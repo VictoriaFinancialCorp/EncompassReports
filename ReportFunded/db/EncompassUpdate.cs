@@ -53,8 +53,9 @@ namespace ReportFunded.db
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
 
-            int count = results.Count;
-            Console.Out.WriteLine("Total Files: " + count);
+            int total = results.Count;
+            int count = 0;
+            Console.Out.WriteLine("Total Files: " + total);
 
 
             //query list for mySql
@@ -73,25 +74,19 @@ namespace ReportFunded.db
                 map.Add("investor", data["Fields.VEND.X263"].ToString().ToUpper());
                 map.Add("investorNum", data["Fields.352"].ToString().ToUpper());
                 map.Add("timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
-                  
+                map.Add("b1_lname", data["Fields.37"].ToString().ToUpper());
+                map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
+                map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
+                map.Add("loanNum", data["Fields.364"].ToString());
               
-                data["Fields.364"].ToString();
-                String n = data["Fields.37"].ToString().ToUpper() +", " + data["Fields.4000"].ToString().ToUpper();
-              
-                Convert.ToInt32(data["Fields.1109"]).ToString("C");
                 data["Fields.362"].ToString();
                 data["Fields.317"].ToString();
                 
-                Console.Out.Write("."); //status bar
-
-                //add to query
-                // queries.Add("INSERT INTO loan(guid, investor, investorNum, createdAt) values('" + data.Guid + "', '"+ map["investor"] +"', '" + map["investorNum"] + "', '" + timestamp + "') "+
-                //    "ON DUPLICATE KEY UPDATE investor='" + map["investor"] + "', investorNum='" + map["investorNum"] + "', updatedAt='" + timestamp + "'");
 
                 cmd.CommandText = string.Format(
-                    "INSERT INTO loan(guid, investor, investorNum, createdAt) " + 
-                    "values(@v1, @v2, @v3, @createdAt) " +
-                    "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt"
+                    "INSERT INTO loan(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum) " + 
+                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7) " +
+                    "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt, b1_lname=@v4, b1_fname=@v5, loanAmt=@v6, loanNum=@v7"
                     );
 
                 cmd.Parameters.Clear();
@@ -100,22 +95,27 @@ namespace ReportFunded.db
                 cmd.Parameters.AddWithValue("@v3", map["investorNum"]);
                 cmd.Parameters.AddWithValue("@createdAt", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
                 cmd.Parameters.AddWithValue("@updatedAt", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@v4", map["b1_lname"]);
+                cmd.Parameters.AddWithValue("@v5", map["b1_fname"]);
+                cmd.Parameters.AddWithValue("@v6", map["loanAmt"]);
+                cmd.Parameters.AddWithValue("@v7", map["loanNum"]);
                 cmd.Prepare();
 
                 cmd.ExecuteNonQuery();
 
+                //status output
+                count++;
+                if(count % 10 == 0)
+                {
+                    Console.Write("\r{0}   ", "writing: " + count + "/" + total);
+                }
+
             }
             Console.Out.WriteLine("");
-       results.Close();
+            results.Close();
 
-            //query db
-            /* foreach(MySqlCommand q in queries)
-             {
-                 connection.query(q);
-                 Console.Write('.');
-             }*/
 
-            connection.addLog("db update", "updated: " + count + " rows in " + DateTime.Now.Subtract(timestamp).ToString(@"s\.fff") + " seconds");
+            connection.addLog("db update", "updated: " + total + " rows in " + DateTime.Now.Subtract(timestamp).ToString(@"s\.fff") + " seconds");
             connection.close();
 
             Console.Out.WriteLine("Finished updating db");
