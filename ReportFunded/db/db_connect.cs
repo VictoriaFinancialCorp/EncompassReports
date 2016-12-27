@@ -75,7 +75,7 @@ namespace ReportFunded.db
         public void addLog(String eventName, String message)
         {
             MySqlDataReader reader = null;
-            string query = "INSERT INTO log(createdAt, event_name, message)"+
+            string query = "INSERT INTO logs(createdAt, event_name, message)"+
                 "VALUES(now(),'"+eventName+"','"+message+"')";
             Console.Out.WriteLine("MySQL Query: " + query);
             MySqlCommand cmd = new MySqlCommand(query, conn);
