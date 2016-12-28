@@ -78,6 +78,7 @@ namespace ReportFunded.db
             fields.Add("Fields.362"); //processor
             fields.Add("Fields.317"); //loan officer
             fields.Add("Fields.Log.MS.Date.Funding");
+            fields.Add("Fields.Log.MS.Date.Purchased");
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
@@ -107,7 +108,24 @@ namespace ReportFunded.db
                 map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
                 map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
                 map.Add("loanNum", data["Fields.364"].ToString());
-                map.Add("fundedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd"));
+
+               
+                if (data["Fields.Log.MS.Date.Funding"] == null)
+                {
+                    map.Add("fundedDate", null);
+                }
+                else
+                {
+                    map.Add("fundedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd"));
+                }
+                if (data["Fields.Log.MS.Date.Purchased"] == null)
+                {
+                    map.Add("purchasedDate", null);
+                }
+                else
+                {
+                    map.Add("purchasedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd"));
+                }
                 map.Add("processor", data["Fields.362"].ToString());
                 map.Add("loanOfficer", data["Fields.317"].ToString());
 
@@ -124,10 +142,11 @@ namespace ReportFunded.db
                 
 
                 cmd.CommandText = string.Format(
-                    "INSERT INTO loans(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate, processor, loan_officer) " + 
-                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7, @v8, @v9, @v10) " +
+                    "INSERT INTO loans(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate, processor, loan_officer, purchasedDate) " + 
+                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7, @v8, @v9, @v10, @v11) " +
                     "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt, b1_lname=@v4, b1_fname=@v5, "+
-                    "loanAmt=@v6, loanNum=@v7, fundedDate=@v8, processor=@v9, loan_officer=@v10"
+                    "loanAmt=@v6, loanNum=@v7, fundedDate=@v8, processor=@v9, loan_officer=@v10, " + 
+                    "purchasedDate=@v11"
                     );
 
                 cmd.Parameters.Clear();
@@ -142,7 +161,8 @@ namespace ReportFunded.db
                 cmd.Parameters.AddWithValue("@v7", map["loanNum"]);
                 cmd.Parameters.AddWithValue("@v8", map["fundedDate"]);
                 cmd.Parameters.AddWithValue("@v9", map["processor"]);
-                cmd.Parameters.AddWithValue("@v10", map["loanOfficer"]);
+                cmd.Parameters.AddWithValue("@v10", map["loanOfficer"]);                    
+                cmd.Parameters.AddWithValue("@v11", map["purchasedDate"]);
                 cmd.Prepare();
 
                 cmd.ExecuteNonQuery();
