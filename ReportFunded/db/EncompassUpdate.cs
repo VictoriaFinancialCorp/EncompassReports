@@ -77,8 +77,15 @@ namespace ReportFunded.db
             fields.Add("Fields.317");
             fields.Add("Fields.362"); //processor
             fields.Add("Fields.317"); //loan officer
+            fields.Add("Fields.Log.MS.CurrentMilestone");
+            fields.Add("Fields.Log.MS.Date.Started");
+            fields.Add("Fields.Log.MS.Date.Submittal");
             fields.Add("Fields.Log.MS.Date.Funding");
             fields.Add("Fields.Log.MS.Date.Purchased");
+            fields.Add("Fields.19"); //loan purpose
+            fields.Add("Fields.4"); //loan term
+            fields.Add("Fields.3"); //interest rate
+            fields.Add("Fields.761"); //locked date
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
@@ -103,53 +110,82 @@ namespace ReportFunded.db
 
                 map.Add("investor", data["Fields.VEND.X263"].ToString().ToUpper());
                 map.Add("investorNum", data["Fields.352"].ToString().ToUpper());
-                map.Add("timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+                //map.Add("timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
                 map.Add("b1_lname", data["Fields.37"].ToString().ToUpper());
                 map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
                 map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
                 map.Add("loanNum", data["Fields.364"].ToString());
+                map.Add("currentMilestone", data["Fields.Log.MS.CurrentMilestone"].ToString());
 
-               
-                if (data["Fields.Log.MS.Date.Funding"] == null)
-                {
-                    map.Add("fundedDate", null);
-                }
-                else
-                {
-                    map.Add("fundedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd"));
-                }
-                if (data["Fields.Log.MS.Date.Purchased"] == null)
-                {
-                    map.Add("purchasedDate", null);
-                }
-                else
-                {
-                    map.Add("purchasedDate", Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd"));
-                }
+
+                String startedDate = (data["Fields.Log.MS.Date.Started"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToString("yyyy-MM-dd");
+                map.Add("startedDate", startedDate);
+
+                String submittalDate = (data["Fields.Log.MS.Date.Submittal"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToString("yyyy-MM-dd");
+                map.Add("submittalDate", submittalDate);
+
+                String fundedDate = (data["Fields.Log.MS.Date.Funding"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd");
+                map.Add("fundedDate", fundedDate);
+
+                String purchasedDate = (data["Fields.Log.MS.Date.Purchased"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd");
+                map.Add("purchasedDate", purchasedDate);
+
                 map.Add("processor", data["Fields.362"].ToString());
                 map.Add("loanOfficer", data["Fields.317"].ToString());
 
-                /*try { 
-                    map.Add("processor", processors[ data["Fields.362"].ToString().ToLower() ].ToString() );
-                    Console.WriteLine("pearl");
-                }catch(Exception e)
-                {
-                    map.Add("processor", "");
-                }*/
-
-                data["Fields.362"].ToString();
-                data["Fields.317"].ToString();
-                
-
-                cmd.CommandText = string.Format(
+                /*cmd.CommandText = string.Format(
                     "INSERT INTO loans(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate, processor, loan_officer, purchasedDate) " + 
-                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7, @v8, @v9, @v10, @v11) " +
+                    "values(@v1, @v2, @v3, @createdAt, @v4, @v5, @v6, @v7, @v8, @v9, @v10, " + 
+                    "@v11, @currMilestone) " +
                     "ON DUPLICATE KEY UPDATE guid=@v1, investor=@v2, investorNum=@v3, updatedAt=@updatedAt, b1_lname=@v4, b1_fname=@v5, "+
                     "loanAmt=@v6, loanNum=@v7, fundedDate=@v8, processor=@v9, loan_officer=@v10, " + 
                     "purchasedDate=@v11"
-                    );
+                    );*/
 
-                cmd.Parameters.Clear();
+                var now  = timestamp.ToString("yyyy - MM - dd HH: mm:ss");
+          
+
+                StringBuilder insert = new StringBuilder();
+                insert.Append("INSERT INTO loans(guid, createdAt ");
+                //cols
+                foreach(String key in map.Keys)
+                {
+                    insert.Append(", " + key);
+                }
+                //values
+                insert.Append(") ");
+                StringBuilder values = new StringBuilder();
+                values.Append("VALUES('" + data.Guid + "', '" + now + "'");
+                foreach(String key in map.Keys)
+                {
+                    if (map[key] != null)
+                    {
+                        values.Append(", '" + MySqlHelper.EscapeString(" " + map[key]) + "'");
+                    }
+                    else
+                    {
+                        values.Append(", NULL");
+                    }
+                }
+                values.Append(") ");
+                StringBuilder update2 = new StringBuilder();
+                update2.Append("ON DUPLICATE KEY UPDATE updatedAt='" + now + "'");
+                foreach(String key in map.Keys)
+                {
+                    if (map[key] != null)
+                    {
+                        update2.Append(", " + key + "='" + MySqlHelper.EscapeString(" " + map[key]) + "'");
+                    }
+                    else
+                    {
+                        update2.Append(", " + key + "=NULL");
+                    }
+                }
+
+                //mysql command
+                cmd.CommandText = insert.ToString() + values.ToString() + update2.ToString();
+
+               /* cmd.Parameters.Clear();
                 cmd.Parameters.AddWithValue("@v1", data.Guid);
                 cmd.Parameters.AddWithValue("@v2", map["investor"]);
                 cmd.Parameters.AddWithValue("@v3", map["investorNum"]);
@@ -163,7 +199,7 @@ namespace ReportFunded.db
                 cmd.Parameters.AddWithValue("@v9", map["processor"]);
                 cmd.Parameters.AddWithValue("@v10", map["loanOfficer"]);                    
                 cmd.Parameters.AddWithValue("@v11", map["purchasedDate"]);
-                cmd.Prepare();
+                cmd.Prepare();*/
 
                 cmd.ExecuteNonQuery();
 
