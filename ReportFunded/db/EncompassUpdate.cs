@@ -75,6 +75,9 @@ namespace ReportFunded.db
             fields.Add("Fields.1109");
             fields.Add("Fields.362");
             fields.Add("Fields.317");
+            fields.Add("Fields.11");//prop address
+            fields.Add("Fields.12");//prop city
+            fields.Add("Fields.15");//prop zip
             fields.Add("Fields.362"); //processor
             fields.Add("Fields.317"); //loan officer
             fields.Add("Fields.Log.MS.CurrentMilestone");
@@ -84,8 +87,18 @@ namespace ReportFunded.db
             fields.Add("Fields.Log.MS.Date.Purchased");
             fields.Add("Fields.19"); //loan purpose
             fields.Add("Fields.4"); //loan term
+            fields.Add("Fields.1811"); //occupancy
             fields.Add("Fields.3"); //interest rate
+
             fields.Add("Fields.761"); //locked date
+            fields.Add("Fields.2149"); //victoria lock date
+            fields.Add("Fields.2220"); //investor lock date
+            fields.Add("Fields.2222"); //investor lock exp date
+     
+            fields.Add("Fields.2232");//base YSP
+            fields.Add("Fields.2273");//total adjustments
+            fields.Add("Fields.2274");//net ysp
+            fields.Add("Fields.2276");//net srp
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
@@ -130,8 +143,38 @@ namespace ReportFunded.db
                 String purchasedDate = (data["Fields.Log.MS.Date.Purchased"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd");
                 map.Add("purchasedDate", purchasedDate);
 
+                map.Add("int_rate", data["Fields.3"].ToString());
+                map.Add("loan_purpose", data["Fields.19"].ToString());
+                map.Add("loan_term", data["Fields.4"].ToString());
+                map.Add("occupancy", data["Fields.1811"].ToString());
+
+                map.Add("address", data["Fields.11"].ToString());
+                map.Add("city", data["Fields.12"].ToString());
+                map.Add("zip", data["Fields.15"].ToString());
+
+                String lockedDate = (data["Fields.761"] == null) ? null : Convert.ToDateTime(data["Fields.761"]).ToString("yyyy-MM-dd");
+                map.Add("lockedDate", lockedDate);
+
+                String victoriaLockDate = (data["Fields.2149"] == null) ? null : Convert.ToDateTime(data["Fields.2149"]).ToString("yyyy-MM-dd");
+                map.Add("victoriaLockDate", victoriaLockDate);
+
+                String investorLockDate = (data["Fields.2220"] == null) ? null : Convert.ToDateTime(data["Fields.2220"]).ToString("yyyy-MM-dd");
+                map.Add("investorLockDate", investorLockDate);
+
+                String investorLockExpDate = (data["Fields.2222"] == null) ? null : Convert.ToDateTime(data["Fields.2222"]).ToString("yyyy-MM-dd");
+                map.Add("investorLockExpDate", investorLockExpDate);
+                
+                map.Add("baseYSP", data["Fields.2232"].ToString());
+                map.Add("totalAdj", data["Fields.2273"].ToString());
+                map.Add("netYSP", data["Fields.2274"].ToString());
+                map.Add("netSRP", data["Fields.2276"].ToString());
+
+
                 map.Add("processor", data["Fields.362"].ToString());
                 map.Add("loanOfficer", data["Fields.317"].ToString());
+
+
+
 
                 /*cmd.CommandText = string.Format(
                     "INSERT INTO loans(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate, processor, loan_officer, purchasedDate) " + 
