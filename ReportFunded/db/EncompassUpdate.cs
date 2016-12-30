@@ -83,8 +83,12 @@ namespace ReportFunded.db
             fields.Add("Fields.Log.MS.CurrentMilestone");
             fields.Add("Fields.Log.MS.Date.Started");
             fields.Add("Fields.Log.MS.Date.Submittal");
+            fields.Add("Fields.Log.MS.Date.Clear to Close");
+            fields.Add("Fields.Log.MS.Date.Docs Drawn");
+            fields.Add("Fields.Log.MS.Date.Docs Signing");
             fields.Add("Fields.Log.MS.Date.Funding");
             fields.Add("Fields.Log.MS.Date.Purchased");
+            fields.Add("Fields.Log.MS.Date.Completion");
             fields.Add("Fields.19"); //loan purpose
             fields.Add("Fields.4"); //loan term
             fields.Add("Fields.1811"); //occupancy
@@ -97,7 +101,7 @@ namespace ReportFunded.db
      
             fields.Add("Fields.2232");//base YSP
             fields.Add("Fields.2273");//total adjustments
-            fields.Add("Fields.2274");//net ysp
+            fields.Add("Fields.2277");//net ysp
             fields.Add("Fields.2276");//net srp
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
@@ -137,11 +141,24 @@ namespace ReportFunded.db
                 String submittalDate = (data["Fields.Log.MS.Date.Submittal"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToString("yyyy-MM-dd");
                 map.Add("submittalDate", submittalDate);
 
+                String CTCDate = (data["Fields.Log.MS.Date.Clear to Close"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Clear to Close"]).ToString("yyyy-MM-dd");
+                map.Add("CTCDate", CTCDate);
+
+                String docsSignedDate = (data["Fields.Log.MS.Date.Docs Signing"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Signing"]).ToString("yyyy-MM-dd");
+                map.Add("docsSignedDate", docsSignedDate);
+
+                String docsDrawnDate = (data["Fields.Log.MS.Date.Docs Drawn"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Drawn"]).ToString("yyyy-MM-dd");
+                map.Add("docsDrawnDate", docsDrawnDate);
+
                 String fundedDate = (data["Fields.Log.MS.Date.Funding"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd");
                 map.Add("fundedDate", fundedDate);
 
                 String purchasedDate = (data["Fields.Log.MS.Date.Purchased"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd");
                 map.Add("purchasedDate", purchasedDate);
+
+                String completionDate = (data["Fields.Log.MS.Date.Completion"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Completion"]).ToString("yyyy-MM-dd");
+                map.Add("completionDate", completionDate);
+
 
                 map.Add("int_rate", data["Fields.3"].ToString());
                 map.Add("loan_purpose", data["Fields.19"].ToString());
@@ -166,7 +183,7 @@ namespace ReportFunded.db
                 
                 map.Add("baseYSP", data["Fields.2232"].ToString());
                 map.Add("totalAdj", data["Fields.2273"].ToString());
-                map.Add("netYSP", data["Fields.2274"].ToString());
+                map.Add("netYSP", data["Fields.2277"].ToString());
                 map.Add("netSRP", data["Fields.2276"].ToString());
 
 

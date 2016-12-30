@@ -126,15 +126,11 @@ public class FundedReport
             {
                 if (row.isHeader())
                 {
-                    text += "<th>" + col + "</th>";
+                    text += "<th>" + col.toString() + "</th>";
                 }
                 else
                 {
-                    text += "<td>" + col + "</td>";
-                }
-                if (Program.debug)
-                {
-                    Console.Out.Write(col+"\t");
+                    text += "<td>" + col.toString() + "</td>";
                 }
             }
             if (Program.debug)
