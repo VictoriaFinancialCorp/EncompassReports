@@ -89,6 +89,20 @@ namespace ReportFunded.db
             fields.Add("Fields.Log.MS.Date.Funding");
             fields.Add("Fields.Log.MS.Date.Purchased");
             fields.Add("Fields.Log.MS.Date.Completion");
+            fields.Add("Fields.Log.MS.Comments.Approval");
+            fields.Add("Fields.Log.MS.Comments.Clear to Close");
+            fields.Add("Fields.Log.MS.Comments.Completion");
+            fields.Add("Fields.Log.MS.Comments.Cond Approval");
+            fields.Add("Fields.Log.MS.Comments.Docs Drawn");
+            fields.Add("Fields.Log.MS.Comments.Docs Signing");
+            fields.Add("Fields.Log.MS.Comments.Funding");
+            fields.Add("Fields.Log.MS.Comments.Processing");
+            fields.Add("Fields.Log.MS.Comments.Purchased");
+            fields.Add("Fields.Log.MS.Comments.Ready for Docs");
+            fields.Add("Fields.Log.MS.Comments.Resubmittal");
+            fields.Add("Fields.Log.MS.Comments.Shipping");
+            fields.Add("Fields.Log.MS.Comments.Started");
+            fields.Add("Fields.Log.MS.Comments.Submittal");
             fields.Add("Fields.19"); //loan purpose
             fields.Add("Fields.4"); //loan term
             fields.Add("Fields.1811"); //occupancy
@@ -158,6 +172,27 @@ namespace ReportFunded.db
 
                 String completionDate = (data["Fields.Log.MS.Date.Completion"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Completion"]).ToString("yyyy-MM-dd");
                 map.Add("completionDate", completionDate);
+
+                map.Add("startedComments", data["Fields.Log.MS.Comments.Started"].ToString());
+                map.Add("processingComments", data["Fields.Log.MS.Comments.Processing"].ToString());
+                map.Add("submittalComments", data["Fields.Log.MS.Comments.Submittal"].ToString());
+                map.Add("conditionalComments", data["Fields.Log.MS.Comments.Cond Approval"].ToString());
+                map.Add("resubmittedComments", data["Fields.Log.MS.Comments.Resubmittal"].ToString());
+                map.Add("approvalComments", data["Fields.Log.MS.Comments.Approval"].ToString());
+                map.Add("CTCComments", data["Fields.Log.MS.Comments.Clear to Close"].ToString());
+                map.Add("readyForDocComments", data["Fields.Log.MS.Comments.Ready for Docs"].ToString());
+                map.Add("docsDrawnComments", data["Fields.Log.MS.Comments.Docs Drawn"].ToString());
+                map.Add("docSignedComments", data["Fields.Log.MS.Comments.Docs Signing"].ToString());
+                map.Add("fundedComments", data["Fields.Log.MS.Comments.Funding"].ToString());
+                map.Add("shippedComments", data["Fields.Log.MS.Comments.Shipping"].ToString());
+                map.Add("purchasedComments", data["Fields.Log.MS.Comments.Purchased"].ToString());
+                map.Add("completionComments", data["Fields.Log.MS.Comments.Completion"].ToString());
+
+               
+                if(data.Guid == "{5913cacc-9304-4b06-82d8-922ec4392796}")
+                {
+                    Console.WriteLine(data["Fields.Log.MS.Comments.Processing"]);
+                }
 
 
                 map.Add("int_rate", data["Fields.3"].ToString());
