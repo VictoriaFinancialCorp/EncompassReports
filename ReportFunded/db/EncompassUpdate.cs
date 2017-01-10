@@ -107,6 +107,7 @@ namespace ReportFunded.db
             fields.Add("Fields.4"); //loan term
             fields.Add("Fields.1811"); //occupancy
             fields.Add("Fields.3"); //interest rate
+            fields.Add("Fields.1393");//current status
 
             fields.Add("Fields.761"); //locked date
             fields.Add("Fields.2149"); //victoria lock date
@@ -147,6 +148,7 @@ namespace ReportFunded.db
                 map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
                 map.Add("loanNum", data["Fields.364"].ToString());
                 map.Add("currentMilestone", data["Fields.Log.MS.CurrentMilestone"].ToString());
+                map.Add("currentStatus", data["Fields.1393"].ToString());
 
 
                 String startedDate = (data["Fields.Log.MS.Date.Started"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToString("yyyy-MM-dd");
