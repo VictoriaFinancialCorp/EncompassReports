@@ -354,7 +354,7 @@ namespace ReportFunded.db
 
             TimeSpan time = DateTime.Now.Subtract(timestamp);
 
-            connection.addLog("db_update", "updated: " + total + " rows in " + 
+            connection.addLog("db_update", "updated: " + folderCri.Value + total + " rows in " + 
                 String.Format("{0} min {1}.{2} sec"
                     , time.Minutes
                     , time.Seconds
