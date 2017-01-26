@@ -25,7 +25,11 @@ namespace ReportFunded
                 "Funded w/o Investor Lock Report",
                 "Accounting Report for Current Month",
                 "db testing",
-                "db update"
+                "db update: 'My Pipeline'",
+                "db update: 'Completed Loans'",
+                "db update: 'Servicing'",
+                "db update: 'Adverse'",
+                "db update: ALL"
             };
 
             parseArgs(args);
@@ -99,7 +103,26 @@ namespace ReportFunded
                     break;
                 case 8:
                     db.EncompassUpdate update = new db.EncompassUpdate();
-                    update.run();
+                    update.run(report);
+                    break;
+                case 9:
+                    db.EncompassUpdate update1 = new db.EncompassUpdate();
+                    update1.run(report);
+                    break;
+                case 10:
+                    db.EncompassUpdate update2 = new db.EncompassUpdate();
+                    update2.run(report);
+                    break;
+                case 11:
+                    db.EncompassUpdate update3 = new db.EncompassUpdate();
+                    update3.run(report);
+                    break;
+                case 12:
+                    db.EncompassUpdate updateAll = new db.EncompassUpdate();
+                    updateAll.run(8);
+                    updateAll.run(9);
+                    updateAll.run(10);
+                    updateAll.run(11);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");

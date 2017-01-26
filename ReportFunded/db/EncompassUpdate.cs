@@ -15,12 +15,13 @@ namespace ReportFunded.db
     {
         private Session session;
         private DateTime timestamp;
+        private int reportNum;
         //private Dictionary<string, int> processors;
 
-        public String run()
+        public String run(int reportNum)
         {
             this.timestamp = DateTime.Now;
-
+            this.reportNum = reportNum;
             //connect
             this.session = Utility.ConnectToServer();
             //this.processors = getProcessors();
@@ -61,8 +62,25 @@ namespace ReportFunded.db
 
             StringFieldCriterion folderCri = new StringFieldCriterion();
             folderCri.FieldName = "Loan.LoanFolder";
-            folderCri.Value = "My Pipeline";
             folderCri.MatchType = StringFieldMatchType.Exact;
+            switch (reportNum)
+            {
+                case 8:
+                    folderCri.Value = "My Pipeline";
+                    break;
+                case 9:
+                    folderCri.Value = "Completed Loans";
+                    break;
+                case 10:
+                    folderCri.Value = "Serviced Loans";
+                    break;
+                case 11:
+                    folderCri.Value = "Adverse Loans";
+                    break;
+                default:
+                    break;
+            }
+            
 
             QueryCriterion fullQuery = folderCri;
 
@@ -118,6 +136,14 @@ namespace ReportFunded.db
             fields.Add("Fields.2273");//total adjustments
             fields.Add("Fields.2277");//net ysp
             fields.Add("Fields.2276");//net srp
+
+            fields.Add("Fields.SERVICE.X8");//servicing status
+            fields.Add("Fields.682");//first payment date
+            fields.Add("Fields.3514");//1st payment to investor
+            fields.Add("Fields.SERVICE.X9");//last statement printed date
+           // fields.Add("Fields.SERVICE.X10");//Interm Service Printed
+            fields.Add("Fields.SERVICE.X39");//number of payments
+
 
             LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
@@ -191,10 +217,10 @@ namespace ReportFunded.db
                 map.Add("completionComments", data["Fields.Log.MS.Comments.Completion"].ToString());
 
                
-                if(data.Guid == "{5913cacc-9304-4b06-82d8-922ec4392796}")
+                /*if(data.Guid == "{5913cacc-9304-4b06-82d8-922ec4392796}")
                 {
                     Console.WriteLine(data["Fields.Log.MS.Comments.Processing"]);
-                }
+                }*/
 
 
                 map.Add("int_rate", data["Fields.3"].ToString());
@@ -227,6 +253,21 @@ namespace ReportFunded.db
                 map.Add("processor", data["Fields.362"].ToString());
                 map.Add("loanOfficer", data["Fields.317"].ToString());
 
+                map.Add("servicingStatus", data["Fields.SERVICE.X8"].ToString());//servicing status
+                map.Add("paymentsCollected", data["Fields.SERVICE.X39"].ToString());//number of payments
+
+                String firstPaymentDate = (data["Fields.682"] == null) ? null : Convert.ToDateTime(data["Fields.682"]).ToString("yyyy-MM-dd");
+                map.Add("firstPaymentDate", firstPaymentDate);//first payment date
+
+                String firstPaymentDateInvestor = (data["Fields.3514"] == null) ? null : Convert.ToDateTime(data["Fields.3514"]).ToString("yyyy-MM-dd");
+                map.Add("firstPaymentDateInvestor", firstPaymentDateInvestor);//1st payment to investor
+
+                String mortgageStatementLastPrinted = (data["Fields.SERVICE.X9"] == null) ? null : Convert.ToDateTime(data["Fields.SERVICE.X9"]).ToString("yyyy-MM-dd");
+                map.Add("mortgageStatementLastPrinted", mortgageStatementLastPrinted);//last statement printed date
+
+
+                
+
 
 
 
@@ -243,7 +284,7 @@ namespace ReportFunded.db
           
 
                 StringBuilder insert = new StringBuilder();
-                insert.Append("INSERT INTO loans(guid, createdAt ");
+                insert.Append("INSERT INTO loans(guid, createdAt, loanFolder ");
                 //cols
                 foreach(String key in map.Keys)
                 {
@@ -252,7 +293,7 @@ namespace ReportFunded.db
                 //values
                 insert.Append(") ");
                 StringBuilder values = new StringBuilder();
-                values.Append("VALUES('" + data.Guid + "', '" + now + "'");
+                values.Append("VALUES('" + data.Guid + "', '" + now + "', '" + folderCri.Value + "'"  );
                 foreach(String key in map.Keys)
                 {
                     if (map[key] != null)
@@ -266,7 +307,7 @@ namespace ReportFunded.db
                 }
                 values.Append(") ");
                 StringBuilder update2 = new StringBuilder();
-                update2.Append("ON DUPLICATE KEY UPDATE updatedAt='" + now + "'");
+                update2.Append("ON DUPLICATE KEY UPDATE updatedAt='" + now + "', loanFolder='" + folderCri.Value+ "'");
                 foreach(String key in map.Keys)
                 {
                     if (map[key] != null)
