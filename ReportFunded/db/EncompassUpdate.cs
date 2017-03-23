@@ -131,7 +131,8 @@ namespace ReportFunded.db
             fields.Add("Fields.2149"); //victoria lock date
             fields.Add("Fields.2220"); //investor lock date
             fields.Add("Fields.2222"); //investor lock exp date
-     
+            fields.Add("Fields.2287");//investor lock type
+
             fields.Add("Fields.2232");//base YSP
             fields.Add("Fields.2273");//total adjustments
             fields.Add("Fields.2277");//net ysp
@@ -243,7 +244,8 @@ namespace ReportFunded.db
 
                 String investorLockExpDate = (data["Fields.2222"] == null) ? null : Convert.ToDateTime(data["Fields.2222"]).ToString("yyyy-MM-dd");
                 map.Add("investorLockExpDate", investorLockExpDate);
-                
+                map.Add("investorLockType", data["Fields.2287"].ToString());
+
                 map.Add("baseYSP", data["Fields.2232"].ToString());
                 map.Add("totalAdj", data["Fields.2273"].ToString());
                 map.Add("netYSP", data["Fields.2277"].ToString());
