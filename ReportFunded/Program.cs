@@ -123,6 +123,7 @@ namespace ReportFunded
                     updateAll.run(9);
                     updateAll.run(10);
                     updateAll.run(11);
+                    updateAll.run(12);
                     break;
                 default:
                     Console.Out.WriteLine("[Error]: No report chosen");

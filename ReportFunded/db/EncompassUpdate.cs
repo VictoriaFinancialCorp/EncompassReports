@@ -77,6 +77,9 @@ namespace ReportFunded.db
                 case 11:
                     folderCri.Value = "Adverse Loans";
                     break;
+                case 12:
+                    folderCri.Value = "Prospective Clients";
+                    break;
                 default:
                     break;
             }
