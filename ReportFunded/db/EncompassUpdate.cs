@@ -5,9 +5,8 @@ using EllieMae.Encompass.Reporting;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using log4net;
 
 namespace ReportFunded.db
 {
@@ -17,6 +16,8 @@ namespace ReportFunded.db
         private DateTime timestamp;
         private int reportNum;
         //private Dictionary<string, int> processors;
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+
 
         public String run(int reportNum)
         {
@@ -28,7 +29,7 @@ namespace ReportFunded.db
 
             startApplication();
 
-            Console.Out.WriteLine("db update finished!");
+            log.Info("Program finished!");
             session.End();
             return "";
         }
@@ -58,7 +59,7 @@ namespace ReportFunded.db
 
         private void startApplication()
         {
-            Console.Out.WriteLine("Program running...");
+            log.Info("Program running...");
 
             StringFieldCriterion folderCri = new StringFieldCriterion();
             folderCri.FieldName = "Loan.LoanFolder";
@@ -83,6 +84,7 @@ namespace ReportFunded.db
                 default:
                     break;
             }
+            log.Info("updating '" + folderCri.Value + "' folder");
             
 
             QueryCriterion fullQuery = folderCri;
@@ -367,7 +369,7 @@ namespace ReportFunded.db
 
             connection.close();
 
-            Console.Out.WriteLine("Finished updating db");
+            log.Info("Finished updating db");
 
 
 

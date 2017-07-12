@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using log4net;
 
 public static class Utility
 {
+
+    private static readonly ILog log = LogManager.GetLogger(typeof(Utility));
+
     public static void SendEmail(List<String> to, List<String> cc, List<String> bcc, String subject, String bodyText)
     {
-        Console.Out.WriteLine("Generating email...");
+        log.Info("Generating email...");
 
         MailMessage message = new MailMessage();
 
@@ -32,16 +36,28 @@ public static class Utility
         smtp.Send(message);
         
 
-        Console.Out.WriteLine("Email sent!");
+        log.Info("Email sent!");
     }
     public static Session ConnectToServer()
     {
-        Console.Out.WriteLine("connecting to server...");
-        Session s = new Session();
-        s.Start(System.Configuration.ConfigurationManager.AppSettings["Eserver_address"].ToString(), System.Configuration.ConfigurationManager.AppSettings["Eserver_login"].ToString(),
-        System.Configuration.ConfigurationManager.AppSettings["Eserver_pw"].ToString());
-        Console.Out.WriteLine("connected.");
-        return s;
+        try
+        {
+            log.Info("connecting to server...");
+
+            Session s = new Session();
+            s.Start(System.Configuration.ConfigurationManager.AppSettings["Eserver_address"].ToString(), System.Configuration.ConfigurationManager.AppSettings["Eserver_login"].ToString(),
+            System.Configuration.ConfigurationManager.AppSettings["Eserver_pw"].ToString());
+            log.Info("connected.");
+            return s;
+        }
+        catch (Exception e)
+        {
+            log.Error(e);
+            log.Info("shutting down...");
+            Environment.Exit(10);
+            return null;
+        }
+        
     }
     public static String toShortDate(Object datetime)
     {
@@ -70,5 +86,6 @@ public static class Utility
             return temp.ToString("F3");
         }
     }
+
 
 }

@@ -222,8 +222,8 @@ namespace ReportFunded.Reports
             double escrowTotal = 0;
             double titleTotal = 0;
             double interestTotal = 0;
-            double warehouseFeeTotal = 0;
-            double warehouseIntTotal = 0;
+            //double warehouseFeeTotal = 0;
+            //double warehouseIntTotal = 0;
             double appraisalTotal = 0;
             double creditTotal = 0;
             double recordingTotal = 0;

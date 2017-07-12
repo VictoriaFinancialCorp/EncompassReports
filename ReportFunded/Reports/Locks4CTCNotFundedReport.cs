@@ -4,14 +4,16 @@ using EllieMae.Encompass.Client;
 using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
+using log4net;
 
 
-namespace ReportFunded
+namespace ReportFunded.Reports
 {
     class Locks4CTCNotFundedReport
     {
         private Session session;
         private List<Row> report;
+        private static readonly ILog log = LogManager.GetLogger(typeof(Locks4CTCNotFundedReport));
 
         public Locks4CTCNotFundedReport()
         {
@@ -32,13 +34,13 @@ namespace ReportFunded
 
             html += HtmlReport.getFooter(timestamp);
 
-            Console.Out.WriteLine("Report ready!");
+            log.Info("Report ready!");
             session.End();
             return html;
         }
         private String startApplication()
         {
-            Console.Out.WriteLine("Program running...");
+            log.Info("Program running...");
 
             String text = "";
 
@@ -162,7 +164,7 @@ namespace ReportFunded
             Console.Out.WriteLine(results.ToString());
 
             int count = results.Count;
-            Console.Out.WriteLine("Total Files" + ": " + count);
+            log.Info("Total Files" + ": " + count);
 
             text += "Total Files CTC, Not Funded: <b>" + count + "</b><br/><br/>";
 

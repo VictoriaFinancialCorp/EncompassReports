@@ -2,6 +2,8 @@
 using ReportFunded.Reports;
 using System;
 using System.Collections.Generic;
+using log4net;
+
 
 namespace ReportFunded
 {
@@ -13,9 +15,12 @@ namespace ReportFunded
         public static List<String> cc;
         public static List<String> bcc;
         public static int report = 0;
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
 
         static void Main(string[] args)
         {
+            log.Info("Starting application.");
+
             List<String> reports = new List<String> {
                 "Funded Report",
                 "Not Purchased Report",

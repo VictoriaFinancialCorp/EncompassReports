@@ -4,13 +4,15 @@ using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
 using System;
 using System.Collections.Generic;
+using log4net;
 
-namespace ReportFunded
+namespace ReportFunded.Reports
 {
     class FundedNotLockedReport
     {
         private Session session;
         private List<Row> report;
+        private static readonly ILog log = LogManager.GetLogger(typeof(FundedNotLockedReport));
 
         public FundedNotLockedReport()
         {
@@ -31,13 +33,13 @@ namespace ReportFunded
 
             html += HtmlReport.getFooter(timestamp);
 
-            Console.Out.WriteLine("Report ready!");
+            log.Info("Report ready!");
             session.End();
             return html;
         }
         private String startApplication()
         {
-            Console.Out.WriteLine("Program running...");
+            log.Info("Program running...");
 
             String text = "";
 
@@ -160,7 +162,7 @@ namespace ReportFunded
             Console.Out.WriteLine(results.ToString());
 
             int count = results.Count;
-            Console.Out.WriteLine("Total Files" + ": " + count);
+            log.Info("Total Files" + ": " + count);
 
 
             //end program if results empty
