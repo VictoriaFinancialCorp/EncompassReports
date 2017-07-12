@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-    <startup> 
-        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
+    <configSections>
+        <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net" />
+    </configSections>
+    <log4net>
+        <appender name="ConsoleAppender" type="log4net.Appender.ConsoleAppender" >
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="%date [%thread] %-5level %logger [%ndc] - %message%newline" />
+            </layout>
+        </appender>
+        <appender name="FileAppender" type="log4net.Appender.FileAppender">
+            <file value="updates.log" />
+            <appendToFile value="true" />
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="%date [%thread] %-5level %logger [%property{NDC}] - %message%newline" />
+            </layout>
+        </appender>
+        <root>
+            <level value="INFO" />
+            <appender-ref ref="ConsoleAppender" />
+            <appender-ref ref="FileAppender" />
+        </root>
+    </log4net>
+    <startup  useLegacyV2RuntimeActivationPolicy="true"> 
+        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5.2"/>
     </startup>
   <appSettings>
+	<add key="log4net.Config" value="log4net.config"/>
+	<add key="log4net.Config.Watch" value="True"/>
     <add key ="Eserver_address" value="EncompassServerAddress" />
     <add key ="Eserver_login" value="EncompassLogin"/>
     <add key ="Eserver_pw" value="EncompassPassword"/>
