@@ -1,5 +1,4 @@
-﻿using EllieMae.Encompass.Client;
-using ReportFunded.Reports;
+﻿using ReportFunded.Reports;
 using System;
 using System.Collections.Generic;
 using log4net;
@@ -15,11 +14,12 @@ namespace ReportFunded
         public static List<String> cc;
         public static List<String> bcc;
         public static int report = 0;
+        public static SessionManager mySession;
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));
 
         static void Main(string[] args)
         {
-            log.Info("Starting application.");
+            log.Info("Starting Report Application...");
 
             List<String> reports = new List<String> {
                 "Funded Report",
@@ -60,9 +60,13 @@ namespace ReportFunded
                 debug = false;
             }
             String text = null;
+
+            mySession = new SessionManager();
+
+            log.Info("Encompass Session begin");
             switch (report)
             {
-                
+
                 case 0:
                     FundedReport report1 = new FundedReport();
                     text = report1.run();
@@ -101,9 +105,7 @@ namespace ReportFunded
                 case 7:
                     db.db_connect connection = new db.db_connect();
                     connection.connect();
-                    //connection.init();
-                   
-                    connection.addLog("test", "everything working");
+                    log.Debug("everything working");
                     connection.close();
                     break;
                 case 8:
@@ -131,16 +133,20 @@ namespace ReportFunded
                     updateAll.run(12);
                     break;
                 default:
-                    Console.Out.WriteLine("[Error]: No report chosen");
+                    log.Error("No report chosen");
                     break;
-                    
+
             }
-            Console.Out.WriteLine("Report Finished");
+            log.Info("Encompass session closing..");
+            mySession.closeSession();
+            
+            
+            log.Info("Report Application Finished!");
 
                      
         }
 
-        public static void parseArgs(String[] args)
+        private static void parseArgs(String[] args)
         {
             to = new List<String>();
             cc = new List<String>();
@@ -193,19 +199,19 @@ namespace ReportFunded
             }
         }
 
-        public static void outputReport(String reportName, String message)
+        private static void outputReport(String reportName, String message)
         {
             //send email
-            if (!debug)
+            if (!Program.debug)
             {
-                Utility.SendEmail(to, cc, bcc, reportName +" for " + DateTime.Now.ToShortDateString(), message);
+                Utility.SendEmail(Program.to, Program.cc, Program.bcc, reportName + " for " + DateTime.Now.ToShortDateString(), message);
             }
             else
             {
                 System.IO.File.WriteAllText(@"report.html", message);
             }
         }
-        
+
     }
 
 }

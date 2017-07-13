@@ -1,5 +1,4 @@
-﻿using EllieMae.Encompass.Client;
-using EllieMae.Encompass.Collections;
+﻿using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
 using System;
@@ -10,7 +9,6 @@ namespace ReportFunded.Reports
 {
     class FundedNotLockedReport
     {
-        private Session session;
         private List<Row> report;
         private static readonly ILog log = LogManager.GetLogger(typeof(FundedNotLockedReport));
 
@@ -22,7 +20,6 @@ namespace ReportFunded.Reports
         public String run()
         {
             //connect
-            session = Utility.ConnectToServer();
 
             DateTime timestamp = DateTime.Now;
 
@@ -34,7 +31,6 @@ namespace ReportFunded.Reports
             html += HtmlReport.getFooter(timestamp);
 
             log.Info("Report ready!");
-            session.End();
             return html;
         }
         private String startApplication()
@@ -157,7 +153,7 @@ namespace ReportFunded.Reports
             SortCriterionList sortOrder = new SortCriterionList();
             sortOrder.Add(new SortCriterion("Fields.Log.MS.Date.Funding", SortOrder.Ascending));
 
-            LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery, sortOrder);
+            LoanReportCursor results = Program.mySession.getSession().Reports.OpenReportCursor(fields, fullQuery, sortOrder);
 
             Console.Out.WriteLine(results.ToString());
 

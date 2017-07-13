@@ -1,6 +1,4 @@
-﻿using EllieMae.Encompass.BusinessObjects.Loans;
-using EllieMae.Encompass.Client;
-using EllieMae.Encompass.Collections;
+﻿using EllieMae.Encompass.Collections;
 using EllieMae.Encompass.Query;
 using EllieMae.Encompass.Reporting;
 using System;
@@ -12,10 +10,10 @@ namespace ReportFunded.Reports
     class FundedReport
     {
 
-        private Session session;
+        //private Session session;
         private static readonly ILog log = LogManager.GetLogger(typeof(FundedReport));
-
         private List<Row> report;
+
         public FundedReport()
         {
             this.report = new List<Row>();
@@ -25,10 +23,7 @@ namespace ReportFunded.Reports
         {
 
             DateTime timestamp = DateTime.Now;
-
-            //connect
-            this.session = Utility.ConnectToServer();
-
+            
             String html = HtmlReport.getHeader();
             html += "<body>";
 
@@ -37,7 +32,6 @@ namespace ReportFunded.Reports
             html += HtmlReport.getFooter(timestamp);
 
             Console.Out.WriteLine("Report ready!");
-            session.End();
             return html;
         }
         private String startApplication()
@@ -63,9 +57,7 @@ namespace ReportFunded.Reports
             fields.Add("Fields.362");
             fields.Add("Fields.317");
 
-            LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
-
-
+            LoanReportCursor results = Program.mySession.getSession().Reports.OpenReportCursor(fields, fullQuery);
 
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
 

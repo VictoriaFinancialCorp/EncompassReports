@@ -12,25 +12,21 @@ namespace ReportFunded.db
 {
     class EncompassUpdate
     {
-        private Session session;
         private DateTime timestamp;
         private int reportNum;
         //private Dictionary<string, int> processors;
-        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+        private static readonly ILog log = LogManager.GetLogger(typeof(EncompassUpdate));
 
 
         public String run(int reportNum)
         {
             this.timestamp = DateTime.Now;
             this.reportNum = reportNum;
-            //connect
-            this.session = Utility.ConnectToServer();
             //this.processors = getProcessors();
 
             startApplication();
 
-            log.Info("Program finished!");
-            session.End();
+            log.Debug("Program finished!");
             return "";
         }
 
@@ -57,10 +53,8 @@ namespace ReportFunded.db
             return processorList;
         }
 
-        private void startApplication()
+        private StringFieldCriterion selectLoanFolder()
         {
-            log.Info("Program running...");
-
             StringFieldCriterion folderCri = new StringFieldCriterion();
             folderCri.FieldName = "Loan.LoanFolder";
             folderCri.MatchType = StringFieldMatchType.Exact;
@@ -85,10 +79,11 @@ namespace ReportFunded.db
                     break;
             }
             log.Info("updating '" + folderCri.Value + "' folder");
-            
+            return folderCri;
+        }
 
-            QueryCriterion fullQuery = folderCri;
-
+        private LoanReportCursor encompassQueryBuilder(QueryCriterion folderCri)
+        {
             StringList fields = new StringList();
             fields.Add("Fields.VEND.X263");
             fields.Add("Fields.352");
@@ -147,136 +142,148 @@ namespace ReportFunded.db
             fields.Add("Fields.682");//first payment date
             fields.Add("Fields.3514");//1st payment to investor
             fields.Add("Fields.SERVICE.X9");//last statement printed date
-           // fields.Add("Fields.SERVICE.X10");//Interm Service Printed
+                                            // fields.Add("Fields.SERVICE.X10");//Interm Service Printed
             fields.Add("Fields.SERVICE.X39");//number of payments
 
 
-            LoanReportCursor results = session.Reports.OpenReportCursor(fields, fullQuery);
+            LoanReportCursor results = Program.mySession.getSession().Reports.OpenReportCursor(fields, folderCri);
+            return results;
             //LoanIdentityList ids = session.Loans.Query(fullQuery);
+        }
 
+        private Dictionary<String, String> dbQueryBuilder(LoanReportData data) {
+            Dictionary<String, String> map = new Dictionary<String, String>();
+
+            map.Add("investor", data["Fields.VEND.X263"].ToString().ToUpper());
+            map.Add("investorNum", data["Fields.352"].ToString().ToUpper());
+            //map.Add("timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+            map.Add("b1_lname", data["Fields.37"].ToString().ToUpper());
+            map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
+            map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
+            map.Add("loanNum", data["Fields.364"].ToString());
+            map.Add("currentMilestone", data["Fields.Log.MS.CurrentMilestone"].ToString());
+            map.Add("currentStatus", data["Fields.1393"].ToString());
+
+
+            String startedDate = (data["Fields.Log.MS.Date.Started"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToString("yyyy-MM-dd");
+            map.Add("startedDate", startedDate);
+
+            String submittalDate = (data["Fields.Log.MS.Date.Submittal"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToString("yyyy-MM-dd");
+            map.Add("submittalDate", submittalDate);
+
+            String CTCDate = (data["Fields.Log.MS.Date.Clear to Close"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Clear to Close"]).ToString("yyyy-MM-dd");
+            map.Add("CTCDate", CTCDate);
+
+            String docsSignedDate = (data["Fields.Log.MS.Date.Docs Signing"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Signing"]).ToString("yyyy-MM-dd");
+            map.Add("docsSignedDate", docsSignedDate);
+
+            String docsDrawnDate = (data["Fields.Log.MS.Date.Docs Drawn"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Drawn"]).ToString("yyyy-MM-dd");
+            map.Add("docsDrawnDate", docsDrawnDate);
+
+            String fundedDate = (data["Fields.Log.MS.Date.Funding"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd");
+            map.Add("fundedDate", fundedDate);
+
+            String purchasedDate = (data["Fields.Log.MS.Date.Purchased"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd");
+            map.Add("purchasedDate", purchasedDate);
+
+            String completionDate = (data["Fields.Log.MS.Date.Completion"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Completion"]).ToString("yyyy-MM-dd");
+            map.Add("completionDate", completionDate);
+
+            map.Add("startedComments", data["Fields.Log.MS.Comments.Started"].ToString());
+            map.Add("processingComments", data["Fields.Log.MS.Comments.Processing"].ToString());
+            map.Add("submittalComments", data["Fields.Log.MS.Comments.Submittal"].ToString());
+            map.Add("conditionalComments", data["Fields.Log.MS.Comments.Cond Approval"].ToString());
+            map.Add("resubmittedComments", data["Fields.Log.MS.Comments.Resubmittal"].ToString());
+            map.Add("approvalComments", data["Fields.Log.MS.Comments.Approval"].ToString());
+            map.Add("CTCComments", data["Fields.Log.MS.Comments.Clear to Close"].ToString());
+            map.Add("readyForDocComments", data["Fields.Log.MS.Comments.Ready for Docs"].ToString());
+            map.Add("docsDrawnComments", data["Fields.Log.MS.Comments.Docs Drawn"].ToString());
+            map.Add("docSignedComments", data["Fields.Log.MS.Comments.Docs Signing"].ToString());
+            map.Add("fundedComments", data["Fields.Log.MS.Comments.Funding"].ToString());
+            map.Add("shippedComments", data["Fields.Log.MS.Comments.Shipping"].ToString());
+            map.Add("purchasedComments", data["Fields.Log.MS.Comments.Purchased"].ToString());
+            map.Add("completionComments", data["Fields.Log.MS.Comments.Completion"].ToString());
+
+
+            /*if(data.Guid == "{5913cacc-9304-4b06-82d8-922ec4392796}")
+            {
+                Console.WriteLine(data["Fields.Log.MS.Comments.Processing"]);
+            }*/
+
+
+            map.Add("int_rate", data["Fields.3"].ToString());
+            map.Add("loan_purpose", data["Fields.19"].ToString());
+            map.Add("loan_term", data["Fields.4"].ToString());
+            map.Add("occupancy", data["Fields.1811"].ToString());
+
+            map.Add("address", data["Fields.11"].ToString());
+            map.Add("city", data["Fields.12"].ToString());
+            map.Add("zip", data["Fields.15"].ToString());
+
+            String lockedDate = (data["Fields.761"] == null) ? null : Convert.ToDateTime(data["Fields.761"]).ToString("yyyy-MM-dd");
+            map.Add("lockedDate", lockedDate);
+
+            String victoriaLockDate = (data["Fields.2149"] == null) ? null : Convert.ToDateTime(data["Fields.2149"]).ToString("yyyy-MM-dd");
+            map.Add("victoriaLockDate", victoriaLockDate);
+
+            String investorLockDate = (data["Fields.2220"] == null) ? null : Convert.ToDateTime(data["Fields.2220"]).ToString("yyyy-MM-dd");
+            map.Add("investorLockDate", investorLockDate);
+
+            String investorLockExpDate = (data["Fields.2222"] == null) ? null : Convert.ToDateTime(data["Fields.2222"]).ToString("yyyy-MM-dd");
+            map.Add("investorLockExpDate", investorLockExpDate);
+            map.Add("investorLockType", data["Fields.2287"].ToString());
+
+            map.Add("baseYSP", data["Fields.2232"].ToString());
+            map.Add("totalAdj", data["Fields.2273"].ToString());
+            map.Add("netYSP", data["Fields.2277"].ToString());
+            map.Add("netSRP", data["Fields.2276"].ToString());
+
+
+            map.Add("processor", data["Fields.362"].ToString());
+            map.Add("loanOfficer", data["Fields.317"].ToString());
+
+            map.Add("servicingStatus", data["Fields.SERVICE.X8"].ToString());//servicing status
+            map.Add("paymentsCollected", data["Fields.SERVICE.X39"].ToString());//number of payments
+
+            String firstPaymentDate = (data["Fields.682"] == null) ? null : Convert.ToDateTime(data["Fields.682"]).ToString("yyyy-MM-dd");
+            map.Add("firstPaymentDate", firstPaymentDate);//first payment date
+
+            String firstPaymentDateInvestor = (data["Fields.3514"] == null) ? null : Convert.ToDateTime(data["Fields.3514"]).ToString("yyyy-MM-dd");
+            map.Add("firstPaymentDateInvestor", firstPaymentDateInvestor);//1st payment to investor
+
+            String mortgageStatementLastPrinted = (data["Fields.SERVICE.X9"] == null) ? null : Convert.ToDateTime(data["Fields.SERVICE.X9"]).ToString("yyyy-MM-dd");
+            map.Add("mortgageStatementLastPrinted", mortgageStatementLastPrinted);//last statement printed date
+            return map;
+        }
+
+        private void startApplication()
+        {
+            log.Debug("Program running...");
+            
+            //setup folder query
+            StringFieldCriterion folderCri = selectLoanFolder();
+
+            //execute encompass query
+            LoanReportCursor results = encompassQueryBuilder(folderCri);
             int total = results.Count;
             int count = 0;
-            Console.Out.WriteLine("Total Files: " + total);
+            log.Info("Total Files: " + total);
 
 
             //query list for mySql
-            List<MySqlCommand> queries = new List<MySqlCommand>();
-            //String timestamp = 
+            //List<MySqlCommand> queries = new List<MySqlCommand>();
+
+            log.Debug("connecting to MySQL...");
             db_connect connection = new db_connect();
             connection.connect();
+            log.Debug("connected to MySQL");
             MySqlCommand cmd = new MySqlCommand();
             cmd.Connection = connection.getConnection();
 
 
             foreach (LoanReportData data in results)
             {
-                Dictionary<String, String> map = new Dictionary<String, String>();
-
-                map.Add("investor", data["Fields.VEND.X263"].ToString().ToUpper());
-                map.Add("investorNum", data["Fields.352"].ToString().ToUpper());
-                //map.Add("timestamp", timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
-                map.Add("b1_lname", data["Fields.37"].ToString().ToUpper());
-                map.Add("b1_fname", data["Fields.4000"].ToString().ToUpper());
-                map.Add("loanAmt", Convert.ToInt32(data["Fields.1109"]).ToString("C"));
-                map.Add("loanNum", data["Fields.364"].ToString());
-                map.Add("currentMilestone", data["Fields.Log.MS.CurrentMilestone"].ToString());
-                map.Add("currentStatus", data["Fields.1393"].ToString());
-
-
-                String startedDate = (data["Fields.Log.MS.Date.Started"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Started"]).ToString("yyyy-MM-dd");
-                map.Add("startedDate", startedDate);
-
-                String submittalDate = (data["Fields.Log.MS.Date.Submittal"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Submittal"]).ToString("yyyy-MM-dd");
-                map.Add("submittalDate", submittalDate);
-
-                String CTCDate = (data["Fields.Log.MS.Date.Clear to Close"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Clear to Close"]).ToString("yyyy-MM-dd");
-                map.Add("CTCDate", CTCDate);
-
-                String docsSignedDate = (data["Fields.Log.MS.Date.Docs Signing"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Signing"]).ToString("yyyy-MM-dd");
-                map.Add("docsSignedDate", docsSignedDate);
-
-                String docsDrawnDate = (data["Fields.Log.MS.Date.Docs Drawn"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Docs Drawn"]).ToString("yyyy-MM-dd");
-                map.Add("docsDrawnDate", docsDrawnDate);
-
-                String fundedDate = (data["Fields.Log.MS.Date.Funding"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Funding"]).ToString("yyyy-MM-dd");
-                map.Add("fundedDate", fundedDate);
-
-                String purchasedDate = (data["Fields.Log.MS.Date.Purchased"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Purchased"]).ToString("yyyy-MM-dd");
-                map.Add("purchasedDate", purchasedDate);
-
-                String completionDate = (data["Fields.Log.MS.Date.Completion"] == null) ? null : Convert.ToDateTime(data["Fields.Log.MS.Date.Completion"]).ToString("yyyy-MM-dd");
-                map.Add("completionDate", completionDate);
-
-                map.Add("startedComments", data["Fields.Log.MS.Comments.Started"].ToString());
-                map.Add("processingComments", data["Fields.Log.MS.Comments.Processing"].ToString());
-                map.Add("submittalComments", data["Fields.Log.MS.Comments.Submittal"].ToString());
-                map.Add("conditionalComments", data["Fields.Log.MS.Comments.Cond Approval"].ToString());
-                map.Add("resubmittedComments", data["Fields.Log.MS.Comments.Resubmittal"].ToString());
-                map.Add("approvalComments", data["Fields.Log.MS.Comments.Approval"].ToString());
-                map.Add("CTCComments", data["Fields.Log.MS.Comments.Clear to Close"].ToString());
-                map.Add("readyForDocComments", data["Fields.Log.MS.Comments.Ready for Docs"].ToString());
-                map.Add("docsDrawnComments", data["Fields.Log.MS.Comments.Docs Drawn"].ToString());
-                map.Add("docSignedComments", data["Fields.Log.MS.Comments.Docs Signing"].ToString());
-                map.Add("fundedComments", data["Fields.Log.MS.Comments.Funding"].ToString());
-                map.Add("shippedComments", data["Fields.Log.MS.Comments.Shipping"].ToString());
-                map.Add("purchasedComments", data["Fields.Log.MS.Comments.Purchased"].ToString());
-                map.Add("completionComments", data["Fields.Log.MS.Comments.Completion"].ToString());
-
-               
-                /*if(data.Guid == "{5913cacc-9304-4b06-82d8-922ec4392796}")
-                {
-                    Console.WriteLine(data["Fields.Log.MS.Comments.Processing"]);
-                }*/
-
-
-                map.Add("int_rate", data["Fields.3"].ToString());
-                map.Add("loan_purpose", data["Fields.19"].ToString());
-                map.Add("loan_term", data["Fields.4"].ToString());
-                map.Add("occupancy", data["Fields.1811"].ToString());
-
-                map.Add("address", data["Fields.11"].ToString());
-                map.Add("city", data["Fields.12"].ToString());
-                map.Add("zip", data["Fields.15"].ToString());
-
-                String lockedDate = (data["Fields.761"] == null) ? null : Convert.ToDateTime(data["Fields.761"]).ToString("yyyy-MM-dd");
-                map.Add("lockedDate", lockedDate);
-
-                String victoriaLockDate = (data["Fields.2149"] == null) ? null : Convert.ToDateTime(data["Fields.2149"]).ToString("yyyy-MM-dd");
-                map.Add("victoriaLockDate", victoriaLockDate);
-
-                String investorLockDate = (data["Fields.2220"] == null) ? null : Convert.ToDateTime(data["Fields.2220"]).ToString("yyyy-MM-dd");
-                map.Add("investorLockDate", investorLockDate);
-
-                String investorLockExpDate = (data["Fields.2222"] == null) ? null : Convert.ToDateTime(data["Fields.2222"]).ToString("yyyy-MM-dd");
-                map.Add("investorLockExpDate", investorLockExpDate);
-                map.Add("investorLockType", data["Fields.2287"].ToString());
-
-                map.Add("baseYSP", data["Fields.2232"].ToString());
-                map.Add("totalAdj", data["Fields.2273"].ToString());
-                map.Add("netYSP", data["Fields.2277"].ToString());
-                map.Add("netSRP", data["Fields.2276"].ToString());
-
-
-                map.Add("processor", data["Fields.362"].ToString());
-                map.Add("loanOfficer", data["Fields.317"].ToString());
-
-                map.Add("servicingStatus", data["Fields.SERVICE.X8"].ToString());//servicing status
-                map.Add("paymentsCollected", data["Fields.SERVICE.X39"].ToString());//number of payments
-
-                String firstPaymentDate = (data["Fields.682"] == null) ? null : Convert.ToDateTime(data["Fields.682"]).ToString("yyyy-MM-dd");
-                map.Add("firstPaymentDate", firstPaymentDate);//first payment date
-
-                String firstPaymentDateInvestor = (data["Fields.3514"] == null) ? null : Convert.ToDateTime(data["Fields.3514"]).ToString("yyyy-MM-dd");
-                map.Add("firstPaymentDateInvestor", firstPaymentDateInvestor);//1st payment to investor
-
-                String mortgageStatementLastPrinted = (data["Fields.SERVICE.X9"] == null) ? null : Convert.ToDateTime(data["Fields.SERVICE.X9"]).ToString("yyyy-MM-dd");
-                map.Add("mortgageStatementLastPrinted", mortgageStatementLastPrinted);//last statement printed date
-
-
-                
-
-
-
+                Dictionary<String, String> map = dbQueryBuilder(data);
 
                 /*cmd.CommandText = string.Format(
                     "INSERT INTO loans(guid, investor, investorNum, createdAt, b1_lname, b1_fname, loanAmt, loanNum, fundedDate, processor, loan_officer, purchasedDate) " + 
@@ -361,18 +368,19 @@ namespace ReportFunded.db
 
             TimeSpan time = DateTime.Now.Subtract(timestamp);
 
-            connection.addLog("db_update", "updated: " + folderCri.Value + total + " rows in " + 
+            /*connection.addLog("db_update", "updated: " + folderCri.Value + total + " rows in " + 
                 String.Format("{0} min {1}.{2} sec"
                     , time.Minutes
                     , time.Seconds
-                    , time.Milliseconds) );
+                    , time.Milliseconds) );*/
 
             connection.close();
 
-            log.Info("Finished updating db");
-
-
-
+            log.Info("Finished updating db in " + 
+                String.Format("{0} min {1}.{2} sec"
+                    , time.Minutes
+                    , time.Seconds
+                    , time.Milliseconds));
         }
     }
 }

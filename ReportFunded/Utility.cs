@@ -42,7 +42,7 @@ public static class Utility
     {
         try
         {
-            log.Info("connecting to server...");
+            log.Info("connecting to encompass server...");
 
             Session s = new Session();
             s.Start(System.Configuration.ConfigurationManager.AppSettings["Eserver_address"].ToString(), System.Configuration.ConfigurationManager.AppSettings["Eserver_login"].ToString(),
