@@ -17,9 +17,12 @@ namespace ReportFunded
         public static SessionManager mySession;
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));
 
+
         static void Main(string[] args)
         {
             log.Info("Starting Report Application...");
+            DateTime timestamp = DateTime.Now;
+
 
             List<String> reports = new List<String> {
                 "Funded Report",
@@ -139,9 +142,14 @@ namespace ReportFunded
             }
             log.Info("Encompass session closing..");
             mySession.closeSession();
-            
-            
-            log.Info("Report Application Finished!");
+
+            TimeSpan time = DateTime.Now.Subtract(timestamp);
+            log.Info("Report Application Finished in " +
+                String.Format("{0} min {1}.{2} sec"
+                    , time.Minutes
+                    , time.Seconds
+                    , time.Milliseconds));
+            //log.Info("Report Application Finished!");
 
                      
         }
